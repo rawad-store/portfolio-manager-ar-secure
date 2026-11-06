@@ -19,7 +19,7 @@ function boot(){
  const legacy=localStorage.getItem(K);
  if(legacy){try{S=JSON.parse(legacy);mig()}catch(_){S=JSON.parse(JSON.stringify(SEED));mig()}}
  else {S=JSON.parse(JSON.stringify(SEED));mig()}
- isUnlocked=true;render();
+ isUnlocked=true;
 }
 function certCalc(){let balance=num(S.cert.c),rows=[];const dates=['2026-03-31','2026-06-30','2026-09-30','2026-12-31'];(S.cert.r||[]).forEach((rate,i)=>{const date=dates[i]||'';const earned=!!date&&date<=td(),profit=earned?balance*num(rate):0;if(earned)balance+=profit;rows.push({i,date,rate:num(rate),earned,profit,balance})});return{value:balance,rows}}
 function C(){const ia=(k,f='')=>S.im.reduce((a,m)=>m.d>=f?a+(m.a[k]||0):a,0),inc={bors:ia('Stocks'),gold:ia('Gold'),crypto:ia('Crypto'),lib:ia('Library'),re:ia('RealEstate'),cash:ia('Cash')},i2=['Stocks','Gold','Library','RealEstate','Cash','Crypto'].reduce((a,k)=>a+ia(k,'2026-01-01'),0),t=S.tx,sum=(ty,k,f)=>t.filter(x=>x[0]==ty&&(!f||f(x))).reduce((a,x)=>a+(x[k]||0),0);
