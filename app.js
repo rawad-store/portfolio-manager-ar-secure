@@ -19,10 +19,83 @@ function changePassword(){$('#pwModal').hidden=false;$('#newPassword').value='';
 async function applyPasswordChange(e){e.preventDefault();const next=$('#newPassword').value,confirm=$('#newPasswordConfirm').value;if(next.length<8){$('#pwError').textContent='كلمة المرور يجب أن تكون 8 أحرف على الأقل';return}if(next!==confirm){$('#pwError').textContent='كلمتا المرور غير متطابقتين';return}const old=window.__vaultPassword,oldKey=vaultKey,oldSalt=vaultSalt,oldIt=vaultIterations;try{const salt=crypto.getRandomValues(new Uint8Array(16)),key=await deriveKey(next,salt,600000),iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc.encode(JSON.stringify(S))));localStorage.setItem(SECURE_K,JSON.stringify({v:1,it:600000,salt:b64(salt),iv:b64(iv),data:b64(ct)}));localStorage.removeItem(K);window.__vaultPassword=next;vaultKey=key;vaultSalt=salt;vaultIterations=600000;$('#pwModal').hidden=true;st('تم تغيير كلمة المرور وحفظ البيانات')}catch(err){window.__vaultPassword=old;vaultKey=oldKey;vaultSalt=oldSalt;vaultIterations=oldIt;console.error('Password change save failed',err);$('#pwError').textContent='تعذر حفظ التغيير. بقيت كلمة المرور القديمة فعالة'}}
 async function restoreNewVault(){const file=$('#restoreFile')?.files?.[0],pw=$('#lockPassword').value,err=$('#lockError');if(!file){err.textContent='اختر ملف النسخة المشفرة أولًا';return}if(pw.length<8){err.textContent='أدخل كلمة مرور النسخة المشفرة';return}try{window.__vaultPassword=pw;S=await decryptPayload(await file.text(),pw);mig();isUnlocked=true;if(!await save())throw Error('save');hideLock();render();armAutoLock()}catch(e){window.__vaultPassword=null;vaultKey=null;vaultSalt=null;vaultIterations=600000;err.textContent='تعذر استعادة النسخة؛ تحقق من كلمة المرور والملف'}}
 async function boot(){
+ // Web Crypto requires secure context (HTTPS or localhost)
+ if(!window.crypto || !window.crypto.subtle){
+   showLock(true);
+   $('#lockTitle').textContent='بيئة غير آمنة';
+   $('#lockText').textContent='التشفير لا يعمل عبر file://. افتح التطبيق عبر localhost أو رفعه على استضافة HTTPS (مثل GitHub Pages).';
+   $('#lockForm').hidden=true;
+   $('#restoreWrap').hidden=true;
+   return;
+ }
  const raw=localStorage.getItem(SECURE_K),legacy=localStorage.getItem(K),setup=!raw;
  showLock(setup);
  $('#restoreSecureBtn')?.addEventListener('click',restoreNewVault);
- $('#lockForm').addEventListener('submit',async e=>{e.preventDefault();const pw=$('#lockPassword').value,confirm=$('#lockConfirm').value,err=$('#lockError');err.textContent='';if(pw.length<8){err.textContent='كلمة المرور يجب أن تكون 8 أحرف على الأقل';return}if(setup&&pw!==confirm){err.textContent='كلمتا المرور غير متطابقتين';return}try{if(setup){window.__vaultPassword=pw;if(legacy){try{S=JSON.parse(legacy);mig()}catch(_){S=JSON.parse(JSON.stringify(SEED))}}else mig();isUnlocked=true;if(!await save())throw Error('تعذر الحفظ')}else{window.__vaultPassword=pw;S=await decryptPayload(raw,pw);const oldIt=vaultIterations;mig();isUnlocked=true;if(oldIt<600000){vaultKey=null;vaultSalt=null;vaultIterations=600000;if(!await save())throw Error('upgrade save')}}hideLock();render();armAutoLock()}catch(x){window.__vaultPassword=null;err.textContent=setup?'تعذر تفعيل الحماية':'كلمة المرور غير صحيحة أو البيانات تالفة'}});
+ // Emergency reset button
+ let resetBtn=$('#resetVaultBtn');
+ if(!resetBtn){
+   const note=$('.secure-note');
+   if(note){
+     resetBtn=document.createElement('button');
+     resetBtn.id='resetVaultBtn';
+     resetBtn.type='button';
+     resetBtn.style.cssText='margin-top:12px;font-size:12px;color:var(--dn);border-color:var(--dn)';
+     resetBtn.textContent='حذف البيانات المحفوظة وإعادة البدء';
+     note.parentNode.insertBefore(resetBtn, note.nextSibling);
+     resetBtn.onclick=()=>{
+       if(!confirm('سيتم حذف كل البيانات المحفوظة على هذا الجهاز. هل أنت متأكد؟'))return;
+       localStorage.removeItem(SECURE_K);
+       localStorage.removeItem(K);
+       location.reload();
+     };
+   }
+ }
+ $('#lockForm').addEventListener('submit',async e=>{
+   e.preventDefault();
+   const pw=$('#lockPassword').value, confirm=$('#lockConfirm').value, err=$('#lockError');
+   err.textContent='';
+   if(pw.length<8){err.textContent='كلمة المرور يجب أن تكون 8 أحرف على الأقل';return}
+   if(setup && pw!==confirm){err.textContent='كلمتا المرور غير متطابقتين';return}
+   const submitBtn=$('#lockSubmit');
+   if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='جاري التحقق...'}
+   try{
+     if(setup){
+       window.__vaultPassword=pw;
+       if(legacy){
+         try{S=JSON.parse(legacy);mig()}catch(_){S=JSON.parse(JSON.stringify(SEED));mig()}
+       }else{
+         S=JSON.parse(JSON.stringify(SEED));mig();
+       }
+       isUnlocked=true;
+       const ok=await save();
+       if(!ok)throw Error('تعذر الحفظ');
+     }else{
+       window.__vaultPassword=pw;
+       S=await decryptPayload(raw,pw);
+       const oldIt=vaultIterations;
+       mig();
+       isUnlocked=true;
+       if(oldIt<600000){
+         vaultKey=null;vaultSalt=null;vaultIterations=600000;
+         const ok=await save();
+         if(!ok)throw Error('upgrade save');
+       }
+     }
+     hideLock();
+     render();
+     armAutoLock();
+   }catch(x){
+     console.error(x);
+     window.__vaultPassword=null;
+     vaultKey=null;vaultSalt=null;
+     isUnlocked=false;
+     err.textContent = setup
+       ? ('تعذر تفعيل الحماية: '+(x.message||'خطأ غير معروف'))
+       : 'كلمة المرور غير صحيحة أو البيانات تالفة. يمكنك حذف البيانات وإعادة البدء.';
+   }finally{
+     if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=setup?'تفعيل الحماية':'فتح التطبيق'}
+   }
+ });
 }
 ['click','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,()=>{if(isUnlocked)armAutoLock()},{passive:true}));document.addEventListener('visibilitychange',()=>{if(document.hidden&&isUnlocked)lockApp()});
 function certCalc(){let balance=num(S.cert.c),rows=[];const dates=['2026-03-31','2026-06-30','2026-09-30','2026-12-31'];(S.cert.r||[]).forEach((rate,i)=>{const date=dates[i]||'';const earned=!!date&&date<=td(),profit=earned?balance*num(rate):0;if(earned)balance+=profit;rows.push({i,date,rate:num(rate),earned,profit,balance})});return{value:balance,rows}}
