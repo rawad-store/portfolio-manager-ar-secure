@@ -1,952 +1,209 @@
-(() => {
-  'use strict';
+/*HI-START*/ // [v6] طبقة التقويم الهجري — Intl أم القرى + fallback حسابي (تقريبي ±1-2 يوم)
+const HI=(()=>{const M=["محرم","صفر","ربيع الأول","ربيع الآخر","جمادى الأولى","جمادى الآخرة","رجب","شعبان","رمضان","شوال","ذو القعدة","ذو الحجة"],G=["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],p2=n=>String(n).padStart(2,'0'),DAY=864e5,iso=d=>d.toISOString().slice(0,10),ofISO=x=>new Date(x+'T00:00:00Z');
+let fmt=null;const parts=d=>{const p={};fmt.formatToParts(d).forEach(x=>{if(x.type==='year'||x.type==='month'||x.type==='day')p[x.type]=+x.value});return p};
+try{fmt=new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'});const t=parts(new Date(Date.UTC(2025,1,2)));if(!(t.year===1446&&t.month===8&&t.day===3))fmt=null}catch(_){fmt=null}
+const jdn=(y,m,d)=>d+Math.ceil(29.5*(m-1))+(y-1)*354+Math.floor((3+11*y)/30)+1948439; // تقويم مدني جدولي، JDN 2440588 = 1970-01-01
+const calc=n=>{const y=Math.floor((30*(n-1948440)+10646)/10631),m=Math.min(12,Math.ceil((n-(29+jdn(y,1,1)))/29.5)+1);return{y,m,d:n-jdn(y,m,1)+1}};
+const toHijri=date=>{const t=date instanceof Date?date:new Date(date);let r=null;if(fmt){try{const p=parts(t);if(p.year&&p.month&&p.day)r={y:p.year,m:p.month,d:p.day}}catch(_){}}if(!r)r=calc(Math.floor(t.getTime()/DAY)+2440588);r.name=M[r.m-1];return r};
+const toHijriFromISO=x=>toHijri(ofISO(x));
+const fromHijri=(y,m,d)=>{let dt=new Date((jdn(y,m,d)-2440588)*DAY),last=0;for(let i=0;i<12;i++){const h=toHijri(dt),c=(h.y-y)*1e4+(h.m-m)*100+(h.d-d);if(!c)return dt;const sg=c>0?1:-1;if(last&&sg!==last)return sg<0?dt:new Date(dt.getTime()-DAY);last=sg;dt=new Date(dt.getTime()-sg*DAY)}return dt};
+const toISO=h=>iso(fromHijri(h.y,h.m,h.d)),formatShort=h=>h.y+'-'+p2(h.m)+'-'+p2(h.d),formatLong=h=>h.d+' '+M[h.m-1]+' '+h.y+' هـ';
+const gLong=x=>{const [y,m,d]=x.split('-').map(Number);return d+' '+G[m-1]+' '+y};
+const formatDual=h=>formatShort(h)+' ('+gLong(toISO(h))+')';
+const addDays=(h,n)=>toHijri(new Date(fromHijri(h.y,h.m,h.d).getTime()+n*DAY)),addYears=(h,n)=>toHijri(fromHijri(h.y+n,h.m,h.d));
+const diffDays=(a,b)=>Math.round((fromHijri(b.y,b.m,b.d)-fromHijri(a.y,a.m,a.d))/DAY);
+const cycleOf=x=>{const h=toHijriFromISO(x),y=(h.m>8||(h.m===8&&h.d>=3))?h.y:h.y-1,nextStartISO=toISO({y:y+1,m:8,d:3});return{year:y,startISO:toISO({y,m:8,d:3}),nextStartISO,endISO:iso(new Date(ofISO(nextStartISO)-DAY))}};
+return{toHijri,toHijriFromISO,fromHijri,toISO,formatShort,formatLong,formatDual,gLong,monthName:m=>M[m-1],MONTHS_AR:M,addDays,addYears,diffDays,hijriYearOf:d=>toHijri(d).y,hijriMonthOf:d=>toHijri(d).m,cycleOf,NOW:()=>toHijriFromISO(td())}})();
+/*HI-END*/
+const SEED={"usd":56,"oz":3880,"cut":"","due":"","tx":[],"man":{"cr":0,"cd":"","sm":0,"sc":0,"cb":0,"lv":0},"cash":[],"cert":{"p":0,"c":0,"r":[0,0,0,0]},"q":[],"zk":{"paid":0,"h":[]},"im":[],"re":{"up":0,"mo":0,"n":0,"start":"","x":[]},"plan":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"Cash":0}};
+let fltMo='',fltQ='';let S=JSON.parse(JSON.stringify(SEED)),tab='ov',flt='',fltYear='',DB=null;const K='wlt1',SECURE_K='wlt1_secure_v1';let isUnlocked=false,lockTimer=null;
+const $=s=>document.querySelector(s),E=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])),num=x=>Number.isFinite(Number(x))?Number(x):0,N=(x,d=0)=>num(x).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d}),P=(x,f='—')=>Number.isFinite(Number(x))?(Number(x)*100).toFixed(1)+'%':f,sg=x=>(num(x)>0?'+':'')+N(x),cl=x=>num(x)>0?'up':num(x)<0?'dn':'mu';
+const TY={Crypto:'كريبتو',Gold:'ذهب',Stocks:'بورصة',Fee:'رسوم',Tathir:'تطهير',Profit:'أرباح',Library:'مكتبة',RealEstate:'عقار'};
+function st(t){const e=$('#st');if(e)e.textContent=t}
+let saveChain=Promise.resolve();
+function save(){saveChain=saveChain.then(async()=>{try{localStorage.setItem(K,JSON.stringify(S));st('حُفظ محليًا '+new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'}));return true}catch(e){st('تعذر حفظ البيانات محليًا');return false}});return saveChain}
+const enc=new TextEncoder(),dec=new TextDecoder();let vaultKey=null,vaultSalt=null,vaultIterations=600000;
+function b64(bytes){let s='';bytes.forEach(x=>s+=String.fromCharCode(x));return btoa(s)}
+function unb64(s){const bin=atob(s);return Uint8Array.from(bin,c=>c.charCodeAt(0))}
+function showLock(){const box=$('#lockScreen');if(box)box.hidden=true}
+function hideLock(){const box=$('#lockScreen');if(box)box.hidden=true}
+function lockApp(){return}
+function armAutoLock(){return}
+function changePassword(){st('الحماية بكلمة مرور غير مفعلة في هذه النسخة')}
+async function applyPasswordChange(e){if(e)e.preventDefault();changePassword()}
+async function restoreNewVault(){st('النسخ المشفرة غير مدعومة في النسخة غير المحمية؛ أدخل البيانات يدويًا')}
+function boot(){
+ const legacy=localStorage.getItem(K);
+ if(legacy){try{S=JSON.parse(legacy);mig()}catch(_){S=JSON.parse(JSON.stringify(SEED));mig()}}
+ else {S=JSON.parse(JSON.stringify(SEED));mig()}
+ S.currentHijriYear=HI.cycleOf(td()).year; // الافتراضي عند كل فتح: سنة الدورة
+ isUnlocked=true;render();
+}
+function certCalc(){let balance=num(S.cert.c),rows=[];const dates=['2026-03-31','2026-06-30','2026-09-30','2026-12-31'];(S.cert.r||[]).forEach((rate,i)=>{const date=dates[i]||'';const earned=!!date&&date<=td(),profit=earned?balance*num(rate):0;if(earned)balance+=profit;rows.push({i,date,rate:num(rate),earned,profit,balance})});return{value:balance,rows}}
+function C(){const ia=(k,f='')=>S.im.reduce((a,m)=>m.d>=f?a+(m.a[k]||0):a,0),inc={bors:ia('Stocks'),gold:ia('Gold'),crypto:ia('Crypto'),lib:ia('Library'),re:ia('RealEstate'),cash:ia('Cash')},i2=['Stocks','Gold','Library','RealEstate','Cash','Crypto'].reduce((a,k)=>a+ia(k,'2026-01-01'),0),t=S.tx,sum=(ty,k,f)=>t.filter(x=>x[0]==ty&&(!f||f(x))).reduce((a,x)=>a+(x[k]||0),0);
+const u=S.usd,gp=S.oz/31.1034768*u,g=sum('Gold',4),goldV=g*gp,goldC=sum('Gold',5)+inc.gold;
+const cap=sum('Crypto',3)+inc.crypto/u,crV=S.man.cr*u;
+const dep=sum('Stocks',5)+inc.bors,fee=sum('Fee',5),th=sum('Tathir',5),pn=sum('Profit',5,x=>x[1]>=S.cut),inv=dep+fee+th;
+const app=S.man.sm+S.man.sc,prof=sum('Profit',5)-th-fee;const cv=certCalc().value;
+const fx={USD:u,QAR:u/3.65,SAR:u/3.75,EGP:1},cash=S.cash.reduce((a,c)=>a+c[2]*fx[c[1]],0)+inc.cash;
+const re=sum('RealEstate',5)+inc.re,lib=S.man.lv,libC=sum('Library',5)+inc.lib;
+const rows=[['الذهب',goldV,.25,'#C99A2E'],['البورصة',app,.25,'#2F7F86'],['شهادة فيصل',cv,.15,'#6C7FA0'],['كريبتو',crV,.05,'#8A63A8'],['نقدية',cash,.18,'#7FA35C'],['عقار',re,.12,'#B5694A'],['مكتبة',lib,0,'#8C8C8C']];
+const total=rows.reduce((a,r)=>a+r[1],0),i26=['Stocks','Library','RealEstate','Gold'].reduce((a,y)=>a+sum(y,5,x=>x[1]>='2026-01-01'),0)+sum('Crypto',3,x=>x[1]>='2026-01-01')*u+i2;
+return{inc,liab:Math.max(0,RT()-re),rn:S.re.mo>0?Math.ceil(Math.max(0,S.re.mo*S.re.n-Math.max(0,re-S.re.up-S.re.x.reduce((s,x)=>s+x[2],0)))/S.re.mo):0,u,gp,g,goldV,goldC,cap,crV,dep,fee,th,pn,inv,app,prof,cv,cash,re,lib,libC,rows,total,i26,days:/^\d{4}-\d{2}-\d{2}$/.test(S.due||'')?Math.ceil((new Date(S.due+'T00:00:00')-new Date(td()+'T00:00:00'))/864e5):null}}
+const inp=(p,v,t='number')=>`<input data-p="${E(p)}" type="${E(t)}" step="any" inputmode="${t=='number'?'decimal':'text'}" value="${E(v)}">`;
+const fl=(l,p,v,t)=>`<label>${l}${inp(p,v,t)}</label>`,kp=(l,v,s,c='')=>`<div class="k"><span>${l}</span><b class="${c}">${v}</b><i>${s||''}</i></div>`;
+function vOv(c){const base=(S.q.find(x=>x[0]=='2025-Q4')||['',0])[1],net=c.total-base-c.i26,qs=[...S.q,['الآن',c.total]],mx=Math.max(...qs.map(x=>x[1]));
+const zk=Math.max(0,c.total*.025-S.zk.paid),zc=c.days<=30?'dn':c.days<=60?'au':'up',gg=c.goldV-c.goldC,sg2=c.app-c.inv;
+return hijriHead(c)+`<div class="hero"><small>إجمالي الثروة (ج.م)</small><b>${N(c.total)}</b><small>≈ $${N(c.total/c.u)} · منذ لقطة ${HI.formatLong(HI.toHijriFromISO('2025-12-31'))}: <span class="${cl(c.total-base)}">${sg(c.total-base)}</span> (منها ضخّ جديد ${N(c.i26)}، والأداء الفعلي <span class="${cl(net)}">${sg(net)} / ${P(base?net/base:0)}</span>)</small></div>
+<div class="bar">${c.rows.map(r=>`<i style="width:${c.total>0?r[1]/c.total*100:0}%;background:${r[3]}"></i>`).join('')}</div>
+<div class="ks">${kp('ربح الذهب غير المحقق',sg(gg),P(c.goldC?gg/c.goldC:0)+' على التكلفة',cl(gg))}${kp('ربح البورصة الكلي',sg(sg2),'غير المحقق '+sg(S.man.sm-S.man.cb),cl(sg2))}${kp('أرباح محققة صافية',N(c.prof),'بعد التطهير والرسوم','up')}${kp('كريبتو',P(c.cap?S.man.cr/c.cap-1:0),N(S.man.cr)+' من '+N(c.cap)+' USDT',cl(S.man.cr-c.cap))}${kp('الزكاة المتبقية',N(zk),c.days===null?'موعد غير محدد':'باقٍ '+c.days+' يوم',zc)}${kp('التزام العقار',N(c.liab),c.rn+' قسط متبقٍ','au')}</div>
+<section class="c"><h2>التوزيع مقابل الهدف</h2><div class="tb"><table><tr><th>الأصل</th><th>القيمة</th><th>الحالي</th><th>الهدف</th><th>الفرق (نقطة)</th></tr>${c.rows.map(r=>{const p=r[1]/c.total,d=p-r[2];return`<tr data-st="${KS[c.rows.indexOf(r)]}" style="cursor:pointer"><td><s style="background:${r[3]}"></s>${E(r[0])} ›</td><td>${N(r[1])}</td><td>${P(p)}</td><td>${r[2]?P(r[2]):'—'}</td><td class="${d>.02?'au':'mu'}">${sg(d*100)}</td></tr>`}).join('')}</table></div></section>
+<section class="c"><h2>الأرصدة الربعية (ألف ج.م)</h2><div class="ch">${qs.map(x=>`<div><em>${N(x[1]/1e3)}</em><b style="height:${mx>0?x[1]/mx*100:0}%"></b><span>${E(x[0])}</span></div>`).join('')}</div></section>`}
+function hijriHead(c){const n=HI.NOW(),Y=S.currentHijriYear,cy=zakatCycle(),im=S.im.filter(m=>m.hijriYear===Y),tx=S.tx.filter(x=>+hx(x).slice(0,4)===Y),last=tx.map(hx).sort().pop(),base=num(S.zk.base)||c.total,z=Math.max(0,base*.025-num(S.zk.paid));
+return`<section class="c"><b>اليوم: ${HI.formatLong(n)}</b><br><small class="mu">الموافق: ${HI.gLong(HI.toISO(n))} · السنة الهجرية ${n.y}</small><br><small class="mu">دورة الزكاة ${cy.year} هـ: ${cy.startH.replace(' هـ','')} → ${cy.endH.replace(' هـ','')} · الموعد الميلادي: ${E(S.due||'—')} · باقي ${c.days===null?'—':c.days} يومًا هجريًا</small></section><div class="ks">${kp('دخل '+Y+' هـ',N(im.reduce((a,m)=>a+num(m.te),0)),im.length+' شهرًا مسجلًا')}${kp('عمليات '+Y+' هـ',N(tx.length),last?'آخر عملية: '+(+last.slice(8))+' '+HI.monthName(+last.slice(5,7)):'لا عمليات')}${kp('زكاة '+Y+' هـ',N(z),'من '+N(base*.025)+' ج.م')}</div>`}
+function vPf(c){const m=S.man,gg=c.goldV-c.goldC;return`<section class="c"><h2>الأسعار</h2><div class="g">${fl('دولار / جنيه','usd',S.usd)}${fl('أونصة الذهب ($)','oz',S.oz)}</div><span class="mu">سعر جرام 24: ${N(c.gp)} ج.م</span></section>
+<section class="c"><h2>الذهب</h2><div class="ks">${kp('الوزن (24)',N(c.g,3)+' جم')}${kp('القيمة',N(c.goldV))}${kp('التكلفة',N(c.goldC))}${kp('الربح',sg(gg),P(c.goldC?gg/c.goldC:0),cl(gg))}</div></section>
+<section class="c"><h2>البورصة</h2><div class="g">${fl('القيمة السوقية للأسهم','man.sm',m.sm)}${fl('كاش داخل التطبيق','man.sc',m.sc)}${fl('تكلفة الأسهم (Cost Basis)','man.cb',m.cb)}</div><div class="ks">${kp('رأس المال المستثمر',N(c.inv),'إيداع '+N(c.dep)+' + رسوم '+N(c.fee)+' + تطهير '+N(c.th))}${kp('الربح الكلي',sg(c.app-c.inv),P(c.inv?(c.app-c.inv)/c.inv:0),cl(c.app-c.inv))}${kp('غير المحقق',sg(m.sm-m.cb),P(m.cb?(m.sm-m.cb)/m.cb:0),cl(m.sm-m.cb))}</div></section>
+<section class="c"><h2>كريبتو</h2><div class="g">${fl('الرصيد (USDT)','man.cr',m.cr)}${fl('تاريخ التحديث','man.cd',m.cd,'date')}</div><span class="mu">رأس المال ${N(c.cap,2)} USDT · القيمة ${N(c.crV)} ج.م · آخر تحديث ${E(S.man.cd||'غير محدد')}</span></section>
+<section class="c"><h2>مكتبة وعقار وشهادة</h2><div class="g">${fl('قيمة المكتبة الحالية','man.lv',m.lv)}</div><div class="ks">${kp('المكتبة',sg(c.lib-c.libC),'تكلفة '+N(c.libC),cl(c.lib-c.libC))}${kp('العقار (بالتكلفة)',N(c.re))}${kp('شهادة فيصل',N(c.cv),'الأصل '+N(S.cert.p)+' · أرباح '+N(c.cv-S.cert.p))}</div></section>
+<section class="c"><h2>النقدية</h2><div class="g">${S.cash.map((x,i)=>fl(E(x[0])+' ('+E(x[1])+')','cash.'+i+'.2',x[2])).join('')}</div></section><section class="c"><h2>شهادة فيصل — الأرباع المالية</h2><div class="g">${fl('أصل الشهادة','cert.p',S.cert.p)}</div><div class="tb"><table><tr><th>الربع</th><th>تاريخ الاستحقاق</th><th>نسبة الربح</th><th>الربح</th><th>الرصيد التراكمي</th></tr>${certCalc().rows.map(r=>`<tr><td>Q${r.i+1}</td><td>${r.date}</td><td>${fl('',`cert.r.${r.i}`,r.rate)}</td><td>${N(r.profit)}</td><td>${N(r.balance)}</td></tr>`).join('')}</table></div><p class="mu">يمكن تعديل نسبة كل ربع، ويُحتسب الربح على الرصيد المرحّل من الربع السابق. الأرباع المستقبلية لا تُحتسب قبل تاريخ استحقاقها.</p></section>`}
+function vTx(c){ // [v6] الهجري أولًا
+const G=S.showGregorian,sel=S.currentHijriYear,fy=fltYear===''?sel:fltYear==='all'?0:+fltYear,nw=HI.NOW(),mo=HI.MONTHS_AR,
+L=S.tx.map((x,i)=>[x,i]).filter(z=>{const h=hx(z[0]),x=z[0];return(!flt||x[0]===flt)&&(!fy||+h.slice(0,4)===fy)&&(!fltMo||+h.slice(5,7)===+fltMo)&&(!fltQ||(x[2]+' '+(TY[x[0]]||'')).includes(fltQ))}).reverse(),
+ys=[...new Set(S.tx.map(x=>+hx(x).slice(0,4)).filter(Boolean).concat(sel))].sort().reverse(),tot=txTotals(L.map(z=>z[0])),O=(a,v,f)=>a.map(y=>`<option value="${y[0]}"${String(y[0])===String(v)?' selected':''}>${y[1]}</option>`).join(''),
+yrs=Array.from({length:7},(_,k)=>nw.y-5+k).map(y=>[y,y+' هـ']),mos=mo.map((m,k)=>[k+1,m]),days=Array.from({length:30},(_,k)=>[k+1,k+1]),
+th=G?'<th>الميلادي</th><th>التاريخ الهجري</th>':'<th>التاريخ الهجري</th><th>الميلادي</th>';
+return`<section class="c"><h2>إضافة عملية</h2><form id="tf" onsubmit="return false"><div class="g"><label>النوع<select name="ty">${Object.entries(TY).map(e=>`<option value="${e[0]}">${e[1]}</option>`).join('')}</select></label><label for="hy">السنة الهجرية<select id="hy" name="hy" aria-describedby="hp">${O(yrs,nw.y)}</select></label><label>الشهر الهجري<select name="hm" aria-describedby="hp">${O(mos,nw.m)}</select></label><label>اليوم<select name="hd" aria-describedby="hp">${O(days,nw.d)}</select></label><label>التاريخ الميلادي (اختياري)<input name="dt" type="date" value="${td()}" aria-describedby="hp"></label></div><p class="mu" id="hp">${HI.formatShort(nw)} · ${HI.formatLong(nw)}</p><div class="g"><label>الوصف<input name="ds"></label><label>مبلغ ج.م<input name="eg" type="number" step="any" inputmode="decimal"></label><label>USDT<input name="us" type="number" step="any" inputmode="decimal"></label><label>ذهب 24 (جم)<input name="gm" type="number" step="any" inputmode="decimal"></label></div><button class="p" data-a="add">إضافة</button></form></section><section class="c"><h2>السجل (${L.length})</h2><div class="g"><label>السنة الهجرية<select data-fy="1"><option value=""${fltYear===''?' selected':''}>السنة المختارة (${sel} هـ)</option><option value="all"${fltYear==='all'?' selected':''}>كل السنوات</option>${ys.map(y=>`<option value="${y}"${String(fltYear)===String(y)?' selected':''}>${y} هـ</option>`).join('')}</select></label><label>الشهر الهجري<select data-fm="1"><option value="">الكل</option>${mos.map(m=>`<option value="${m[0]}"${String(fltMo)===String(m[0])?' selected':''}>${m[1]}</option>`).join('')}</select></label><label>النوع<select data-f="1"><option value="">الكل</option>${Object.entries(TY).map(e=>`<option value="${e[0]}"${flt===e[0]?' selected':''}>${e[1]}</option>`).join('')}</select></label><label>بحث<input type="search" data-fq="1" value="${E(fltQ)}"></label></div><div class="ks filter-total">${kp('إجمالي USDT',N(tot.usdt,2))}${kp('إجمالي ذهب 24',N(tot.gold,3)+' جم')}</div><div class="tb sc"><table><tr>${th}<th>النوع</th><th>الوصف</th><th>المبلغ</th><th></th></tr>${L.length?L.map(z=>{const x=z[0],hc=`<td>${E(hx(x))}</td>`,gc=`<td class="mu" style="font-size:12px">${E(x[1])}</td>`;return`<tr>${G?gc+hc:hc+gc}<td>${E(TY[x[0]]||x[0])}</td><td>${E(x[2])}</td><td>${x[5]?N(x[5],2)+' ج':x[3]?N(x[3],2)+' USDT':N(x[4],3)+' جم'}</td><td><button data-a="del" data-i="${z[1]}">حذف</button></td></tr>`}).join(''):'<tr><td colspan="6" class="mu">لا توجد نتائج</td></tr>'}<tfoot><tr><td colspan="6"><b>الإجمالي ${fy?'لسنة '+fy+' هـ':'لكل السنوات'}: ${N(tot.egp)} ج.م (${tot.count} عملية)</b></td></tr></tfoot></table></div></section>`}
+document.addEventListener('change',e=>{const f=e.target.form;if(!f||f.id!=='tf')return;const n=e.target.name;let h;if(n==='dt'){if(!e.target.value)return;h=HI.toHijriFromISO(e.target.value);f.hy.value=h.y;f.hm.value=h.m;f.hd.value=h.d}else if(['hy','hm','hd'].includes(n)){f.dt.value=HI.toISO({y:+f.hy.value,m:+f.hm.value,d:+f.hd.value});h=HI.toHijriFromISO(f.dt.value);f.hd.value=h.d}else return;$('#hp').textContent=HI.formatShort(h)+' · '+HI.formatLong(h)});
+function vZk(c){const base=num(S.zk.base)||c.total,z=base*.025,ns=85*c.gp,rem=Math.max(0,z-S.zk.paid),y=+S.zk.year||zakatCycle().year,cycle=zakatCycle();return`<section class="c"><h2>زكاة ${y} هـ</h2><p class="mu">${cycle.startH.replace(' هـ','')} → ${cycle.endH.replace(' هـ','')} · الموعد الميلادي: ${E(S.due||'غير محدد')} · باقي ${c.days===null?'—':c.days} يومًا هجريًا</p><div class="ks">${kp('أساس الزكاة المثبت',N(base))}${kp('الزكاة 2.5%',N(z))}${kp('المدفوع',N(S.zk.paid))}${kp('المتبقي',N(rem),'موعد الوجوب '+(S.due||'غير محدد'),c.days!==null&&c.days<=30?'dn':'au')}${kp('النصاب (85 جم ذهب)',N(ns),c.total>=ns?'بلغ النصاب':'لم يبلغ')}</div><div class="g">${fl('المدفوع في دورة الزكاة الحالية','zk.paid',S.zk.paid)}</div><p class="mu">دورة الزكاة ثابتة من 3 شعبان إلى 2 شعبان من السنة التالية. الموعد الميلادي المحسوب تلقائيًا للدورة الحالية: ${E(S.due||'غير محدد')}.</p></section><section class="c"><h2>إضافة أو تعديل سنة زكاة هجرية</h2><form id="zkf" onsubmit="return false"><div class="g"><label>السنة الهجرية<input name="zy" type="number" min="1300" max="1600" value="${y}"></label><label>أساس الزكاة<input name="zb" type="number" min="0" step="any" value="${N(base,2).replace(/,/g,'')}"></label><label>المدفوع<input name="zp" type="number" min="0" step="any" value="${N(S.zk.paid,2).replace(/,/g,'')}"></label></div><button class="p" data-a="addzk">حفظ السنة الهجرية</button> <span id="zkmsg" class="mu"></span></form></section><section class="c"><h2>الأعوام الهجرية السابقة</h2><div class="tb"><table><tr><th>الدورة</th><th>الأساس</th><th>المستحق 2.5%</th><th>المدفوع</th><th>المتبقي</th></tr>${S.zk.h.map(h=>{const d=num(h[1])*.025-num(h[2]);return`<tr><td>${E((String(h[0]).match(/^\d{4}/)||[h[0]])[0])} هـ</td><td>${N(h[1])}</td><td>${N(num(h[1])*.025,2)}</td><td>${N(h[2],2)}</td><td class="${Math.abs(d)<.05?'up':'dn'}">${N(d,2)}</td></tr>`}).join('')||'<tr><td colspan="5" class="mu">لا توجد سنوات سابقة</td></tr>'}</table></div><p class="mu">الحساب تقديري للمراجعة، ويُستحسن التحقق من النصاب والديون المستحقة وتاريخ الوجوب شرعيًا.</p></section>`}
+function ensureZakatYear(){const cycle=zakatCycle(),stored=+S.zk.year||0;if(stored>1700){S.zk.year=cycle.year;S.due=cycle.due;if(!num(S.zk.base))S.zk.base=C().total;save();return}if(!stored){S.zk.year=cycle.year;S.due=cycle.due;if(!num(S.zk.base))S.zk.base=C().total;save();return}if(stored!==cycle.year){const label=hijriLabel(stored);if(!S.zk.h.some(h=>String(h[0])===label||String(h[0]).startsWith(String(stored)+' هـ')))S.zk.h.push([label,num(S.zk.base)||C().total,num(S.zk.paid)]);S.zk.year=cycle.year;S.zk.paid=0;S.zk.base=C().total;S.due=cycle.due;save();st('تم فتح دورة زكاة '+cycle.year+' هـ في 3 شعبان وترحيل الدورة السابقة')}else if(S.due!==cycle.due){S.due=cycle.due;save()}}
+function addZakatYear(){const f=$('#zkf'),y=+f.zy.value||0,base=+f.zb.value||0,paid=+f.zp.value||0;if(!Number.isInteger(y)||y<1300||y>1600||base<0||paid<0){$('#zkmsg').textContent='تحقق من السنة الهجرية والقيم المدخلة';return}const label=hijriLabel(y);if(y===+S.zk.year){S.zk.base=base;S.zk.paid=paid}else{const i=S.zk.h.findIndex(h=>String(h[0])===label||String(h[0]).startsWith(String(y)+' هـ'));if(i<0)S.zk.h.push([label,base,paid]);else S.zk.h[i]=[label,base,paid]}save();render();st('تم حفظ دورة الزكاة '+y+' هـ')}
+function yearOf(d){const y=String(d||'').slice(0,4);return /^\d{4}$/.test(y)?+y:null}
+function yearStats(y){
+ const tx=S.tx.filter(x=>yearOf(x[1])===y),im=S.im.filter(m=>yearOf(m.d)===y);
+ const income=im.reduce((a,m)=>a+num(m.te),0),invested=im.reduce((a,m)=>a+Object.values(m.a||{}).reduce((b,v)=>b+num(v),0),0);
+ const cashflow=tx.reduce((a,x)=>a+num(x[5]),0),profit=tx.filter(x=>x[0]==='Profit').reduce((a,x)=>a+num(x[5]),0),fees=tx.filter(x=>x[0]==='Fee').reduce((a,x)=>a+num(x[5]),0),tathir=tx.filter(x=>x[0]==='Tathir').reduce((a,x)=>a+num(x[5]),0);
+ return {year:y,tx:tx.length,months:im.length,income,invested,cashflow,profit,fees,tathir};
+}
+function archiveYear(y){if(S.annual.archived[y])return;const st=yearStats(y),q=S.q.find(x=>x[0]===y+'-Q4')||S.q.filter(x=>String(x[0]).startsWith(y+'-')).slice(-1)[0];S.annual.archived[y]={...st,closingSnapshot:q?q[1]:null,archivedAt:td()};}
+function ensureCurrentYear(){S.version=6;syncYearSelect()}
+function syncYearSelect(){const el=$('#yearSel');if(!el)return;const ys=new Set([S.currentHijriYear,HI.cycleOf(td()).year]);S.tx.forEach(x=>{const y=+hx(x).slice(0,4);if(y)ys.add(y)});S.im.forEach(m=>{if(m.hijriYear)ys.add(m.hijriYear)});el.innerHTML=[...ys].sort((a,b)=>b-a).map(y=>`<option value="${y}"${y===S.currentHijriYear?' selected':''}>${y} هـ</option>`).join('')}
+function vYears(c){const y=+S.annual.viewYear||+S.annual.currentYear,st=yearStats(y),arch=[...Object.values(S.annual.archived)].sort((a,b)=>b.year-a.year);const rows=arch.map(a=>`<tr><td>${a.year}</td><td>${N(a.income)}</td><td>${N(a.invested)}</td><td>${N(a.profit)}</td><td>${a.closingSnapshot===null?'—':N(a.closingSnapshot)}</td></tr>`).join('');return`<section class="c"><h2>السنة النشطة: ${y}</h2><div class="ks">${kp('دخل محوّل',N(st.income),'عدد الأشهر '+st.months)}${kp('إجمالي المستثمر',N(st.invested))}${kp('أرباح محققة',N(st.profit),'قبل التطهير والرسوم','up')}${kp('العمليات',N(st.tx))}</div><p class="mu">تُضاف العمليات الجديدة تلقائيًا إلى سنة تاريخها. عند دخول يناير تُؤرشف السنة السابقة تلقائيًا وتُفتح سنة جديدة دون حذف الرصيد أو السجل.</p></section><section class="c"><h2>الأرشيف السنوي</h2><div class="tb"><table><tr><th>السنة</th><th>الدخل المحوّل</th><th>المستثمر</th><th>الأرباح</th><th>آخر رصيد مثبت</th></tr>${rows||'<tr><td colspan="5" class="mu">لا توجد سنوات مؤرشفة بعد</td></tr>'}</table></div></section><section class="c"><h2>قواعد الاستمرارية</h2><p>لا يتم تصفير المحفظة عند بداية السنة؛ تبقى الأصول والأسعار والأرصدة كما هي، بينما تُصنّف العمليات والدخل حسب تاريخها. يمكن اختيار أي سنة من القائمة أعلى الصفحة لمراجعة تقريرها.</p></section>`}
+function txFiltered(){return S.tx.filter(x=>(!flt||x[0]===flt)&&(!fltYear||String(x[1]).slice(0,4)===fltYear))}
+function txTotals(list){return list.reduce((a,x)=>{a.egp+=num(x[5]);a.usdt+=num(x[3]);a.gold+=num(x[4]);a.count++;return a},{egp:0,usdt:0,gold:0,count:0})}
+function chartSvg(items,color='var(--ac)'){const vals=items.map(x=>num(x[1])),mx=Math.max(1,...vals),w=620,h=220,p=28,bw=Math.max(12,Math.min(52,(w-p*2)/Math.max(1,items.length)-8));return`<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="رسم بياني"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="var(--ln)"/><g>${items.map((x,i)=>{const bh=(num(x[1])/mx)*(h-p*2),xx=p+i*((w-p*2)/Math.max(1,items.length))+(w-p*2)/Math.max(1,items.length)/2-bw/2;return`<rect x="${xx.toFixed(1)}" y="${(h-p-bh).toFixed(1)}" width="${bw}" height="${Math.max(1,bh).toFixed(1)}" rx="4" fill="${color}" opacity=".85"><title>${E(x[0])}: ${N(x[1])}</title></rect><text x="${(xx+bw/2).toFixed(1)}" y="${h-8}" text-anchor="middle">${E(String(x[0]).slice(-7))}</text>`}).join('')}</g></svg>`}
+function vAn(c){const y=+S.annual.viewYear||new Date().getFullYear(),tx=S.tx.filter(x=>String(x[1]).slice(0,4)===String(y)),months=Array.from({length:12},(_,i)=>{const m=String(i+1).padStart(2,'0');return[y+'-'+m,tx.filter(x=>String(x[1]).slice(0,7)===y+'-'+m).reduce((a,x)=>a+num(x[5]),0)]}),by=Object.entries(tx.reduce((a,x)=>(a[x[0]]=(a[x[0]]||0)+num(x[5]),a),{}));return`<section class="c"><h2>تحليلات ${y}</h2><div class="ks">${kp('إجمالي العمليات',N(tx.length))}${kp('صافي العمليات ج.م',N(tx.reduce((a,x)=>a+num(x[5]),0)))}${kp('USDT',N(tx.reduce((a,x)=>a+num(x[3]),0),2))}${kp('ذهب 24',N(tx.reduce((a,x)=>a+num(x[4]),0),3)+' جم')}</div></section><section class="c"><h2>الحركة الشهرية</h2>${chartSvg(months,'var(--ac)')}</section><section class="c"><h2>التوزيع حسب النوع</h2>${chartSvg(by,'var(--gold)')}</section>`}
+function render(){ensureCurrentYear();ensureZakatYear();const zc0=zakatCycle();S.zk.cycleStartHijri=zc0.startH;S.zk.cycleEndHijri=zc0.endH;const hd=$('#hd');if(hd)hd.textContent='اليوم: '+HI.formatLong(HI.NOW());const gs=$('#gSw');if(gs)gs.checked=!!S.showGregorian;const c=C();$('#app').innerHTML='<nav>'+[['ov','نظرة عامة'],['inv','الاستثمارات'],['in','الدخل'],['pf','الأرصدة والأسعار'],['tx','العمليات'],['zk','الزكاة'],['hl','الصحة والنسخ'],['years','السنوات'],['an','التحليلات']].map(t=>`<button data-t="${t[0]}" class="${t[0]==tab||(tab=='st'&&t[0]=='inv')?'on':''}">${t[1]}</button>`).join('')+'</nav>'+({ov:vOv,inv:vInv,st:vSt,in:vIn,pf:vPf,tx:vTx,zk:vZk,hl:vHl,years:vYears,an:vAn})[tab](c)}
+const td=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+function zakatCycle(){const c=HI.cycleOf(td());return{year:c.year,due:c.nextStartISO,nextDue:c.nextStartISO,startISO:c.startISO,startH:HI.formatLong({y:c.year,m:8,d:3}),endH:HI.formatLong({y:c.year+1,m:8,d:2})}} // due = بداية الدورة التالية (الموعد)
+function hijriLabel(year){return year+' هـ'}
+function hx(x){return x[6]||(/^\d{4}-\d{2}-\d{2}$/.test(x[1])?HI.formatShort(HI.toHijriFromISO(x[1])):'')}
 
-  /* ============ الثوابت ============ */
-  const KEY = 'portfolio_v5_plain';
-  const LEGACY_KEYS = ['portfolio_v4_plain', 'portfolio_v3_plain'];
-  const THEME_KEY = 'portfolio_theme';
-  const OZ_IN_GRAM = 31.1034768;
-  const ZAKAT_RATE = 0.025;
-  const CURRENCY = 'ج.م';
-  const SAVE_DEBOUNCE_MS = 400;
-  const MAX_IMPORT_SIZE = 10 * 1024 * 1024;
-  const ID_REGEX = /^[a-z0-9]{1,24}$/i;
-  const YEARS_TO_SHOW = 8;
+ const AL=[['Stocks','بورصة'],['Gold','ذهب'],['Crypto','كريبتو'],['Library','مكتبة'],['RealEstate','عقار'],['Cash','نقد']],MN=(d,n)=>{const x=new Date(d);x.setMonth(x.getMonth()+n);return x.toISOString().slice(0,10)};
+const RT=()=>S.re.up+S.re.mo*S.re.n+S.re.x.reduce((s,x)=>s+x[1],0);
+function mig(){
+ const cp=o=>JSON.parse(JSON.stringify(o));
+ if(!Array.isArray(S.tx))S.tx=cp(SEED.tx);
+ if(!S.man||typeof S.man!=='object')S.man=cp(SEED.man);
+ if(!Array.isArray(S.im))S.im=cp(SEED.im);
+ if(!S.plan||typeof S.plan!=='object')S.plan=cp(SEED.plan);
+ if(!S.re||typeof S.re!=='object')S.re=cp(SEED.re);
+ if(!Array.isArray(S.re.x))S.re.x=cp(SEED.re.x);
+ if(!S.cert||typeof S.cert!=='object')S.cert=cp(SEED.cert);
+ if(!Array.isArray(S.cert.r))S.cert.r=cp(SEED.cert.r);
+ if(!Array.isArray(S.q))S.q=cp(SEED.q);
+ if(!S.zk||typeof S.zk!=='object')S.zk=cp(SEED.zk);
+ if(!Array.isArray(S.zk.h))S.zk.h=cp(SEED.zk.h);
+ if(!Number.isInteger(+S.zk.year))S.zk.year=0;
+ if(!Number.isFinite(+S.zk.base)||+S.zk.base<0)S.zk.base=0;
+ S.zk.base=+S.zk.base;
+ if(!Array.isArray(S.cash))S.cash=cp(SEED.cash);
+ ['usd','oz'].forEach(k=>{if(!Number.isFinite(+S[k])||+S[k]<=0)S[k]=SEED[k];else S[k]=+S[k]});
+ ['cr','sm','sc','cb','lv'].forEach(k=>{if(!Number.isFinite(+S.man[k]))S.man[k]=SEED.man[k];else S.man[k]=+S.man[k]});
+ ['c','p'].forEach(k=>{if(!Number.isFinite(+S.cert[k]))S.cert[k]=SEED.cert[k];else S.cert[k]=+S.cert[k]});
+ ['up','mo','n'].forEach(k=>{if(!Number.isFinite(+S.re[k])||+S.re[k]<0)S.re[k]=SEED.re[k];else S.re[k]=+S.re[k]});
+ if(!S.annual||typeof S.annual!=='object')S.annual={activeYear:new Date().getFullYear(),archived:{}};
+ if(!Number.isInteger(+S.annual.activeYear))S.annual.activeYear=new Date().getFullYear();
+ if(!S.annual.archived||typeof S.annual.archived!=='object')S.annual.archived={};
+ if(!Number.isInteger(+S.annual.currentYear))S.annual.currentYear=+S.annual.activeYear||new Date().getFullYear();
+ if(!Number.isInteger(+S.annual.viewYear))S.annual.viewYear=+S.annual.activeYear||S.annual.currentYear;
+ delete S.inc;
+ // [v6] ترحيل من v3/v4/v5: اشتقاق الحقول الهجرية من date دون لمس القديم
+ S.version=6;if(!Number.isInteger(+S.currentHijriYear))S.currentHijriYear=HI.cycleOf(td()).year;S.currentHijriYear=+S.currentHijriYear;S.showGregorian=!!S.showGregorian;
+ const ok=x=>/^\d{4}-\d{2}-\d{2}$/.test(x);S.tx.forEach(x=>{if(!x[6]&&ok(x[1]))x[6]=HI.formatShort(HI.toHijriFromISO(x[1]))});
+ S.im.forEach(m=>{if(ok(m.d)){const h=HI.toHijriFromISO(m.d);m.hijriYear=h.y;m.hijriMonth=h.y+'-'+String(h.m).padStart(2,'0')}});
+}
+function gaps(){const ds=S.im.map(m=>m.d.slice(0,7)).sort(),o=[];if(!ds.length)return o;let[y,m]=ds[0].split('-').map(Number);for(;;){const k=y+'-'+String(m).padStart(2,'0');if(k>ds[ds.length-1])return o;if(!ds.includes(k))o.push(k);if(++m>12){m=1;y++}}}
+function vIn(c){const L=S.im.map((m,i)=>[m,i]).sort((a,b)=>b[0].d<a[0].d?-1:1),Y=S.im.filter(m=>m.d>=new Date().getFullYear()+'-01-01'),sm=k=>Y.reduce((s,m)=>s+(m[k]||0),0),inv=m=>Object.values(m.a).reduce((s,v)=>s+v,0),iy=Y.reduce((s,m)=>s+inv(m),0),pl=Object.values(S.plan).reduce((s,v)=>s+v,0),nf=n=>`<input name="${n}" type="number" step="any" inputmode="decimal">`;
+return`<div class="ks">${kp('دخل هذا العام (ريال)',N(sm('q')))}${kp('محوّل هذا العام (ج.م)',N(sm('te')))}${kp('مستثمر هذا العام',N(iy),'متوسط شهري '+N(iy/Math.max(1,Y.length)))}</div>
+<section class="c"><h2>إضافة دخل شهر</h2><form id="inf" onsubmit="return false"><div class="g"><label>الشهر<input name="d" type="date" value="${td().slice(0,8)}01"></label><label>الدخل (ريال)${nf('q')}</label><label>المحوّل (ريال)${nf('tq')}</label><label>المستلم (ج.م)${nf('te')}</label><label>أحتفظ به للمصروف (ج.م)${nf('ex')}</label></div><div class="g">${AL.map(a=>`<label>${a[1]} (ج.م)${nf(a[0])}</label>`).join('')}</div><p><button type="button" data-a="auto">توزيع تلقائي</button> <button class="p" data-a="addim">حفظ الشهر</button> <span id="lv" class="mu"></span></p></form></section>
+<section class="c"><h2>نسب التوزيع التلقائي (%)</h2><div class="g">${AL.filter(a=>a[0]!='RealEstate').map(a=>fl(a[1],'plan.'+a[0],S.plan[a[0]])).join('')}</div><span class="${pl==100?'mu':'dn'}">المجموع ${pl}%${pl==100?'':' (يجب 100)'} · يُخصم قسط العقار (${N(S.re.mo)}) أولًا ثم يُوزَّع الباقي</span></section>
+<section class="c"><h2>السجل</h2><div class="tb sc"><table><tr><th>الشهر</th><th>دخل ر</th><th>محوّل ر</th><th>محوّل ج</th><th>مستثمر</th><th>مصروف/عائلة</th><th>متبقٍ ر</th><th></th></tr>${L.map(z=>{const m=z[0],v=inv(m);return`<tr><td>${m.d.slice(0,7)}</td><td>${N(m.q)}</td><td>${N(m.tq)}</td><td>${N(m.te)}</td><td>${N(v)}</td><td>${N(m.te-v)}</td><td>${N(m.q-m.tq)}</td><td><button data-a="delim" data-i="${z[1]}">حذف</button></td></tr>`}).join('')}</table></div><p class="mu">المتبقي بالريال يبقى خارج المحفظة ما لم تسجّله نقدًا في الأصول. والمبلغ الموزّع على «نقد» يُضاف للنقدية تلقائيًا، فلا تعدّل أرصدة النقدية لنفس المبلغ.</p></section>`}
+function vRe(c){const R=S.re,T=RT(),xp=R.x.reduce((s,x)=>s+x[2],0),xl=R.x.reduce((s,x)=>s+x[1]-x[2],0),il=Math.max(0,R.mo*R.n-Math.max(0,c.re-R.up-xp)),n=Math.ceil(il/R.mo),mk=td().slice(0,7),pd=S.tx.filter(x=>x[0]=='RealEstate'&&x[1].slice(0,7)==mk).reduce((s,x)=>s+x[5],0)+S.im.filter(m=>m.d.slice(0,7)==mk).reduce((s,m)=>s+(m.a.RealEstate||0),0);let b=il;
+const sc=[...Array(6)].map((_,i)=>{const a=Math.min(R.mo,b);b-=a;return`<tr><td>${MN(mk+'-'+R.start.slice(8),i+(pd>=R.mo?1:0))}</td><td>${N(a)}</td><td>${N(b)}</td></tr>`}).join('');
+return`<section class="c"><h2>خطة UBL – فريدة</h2><div class="g">${fl('المقدم + دفعة أكتوبر','re.up',R.up)}${fl('القسط الشهري','re.mo',R.mo)}${fl('عدد الأقساط','re.n',R.n)}${fl('تاريخ أول قسط','re.start',R.start,'date')}</div><div class="tb"><table><tr><th>البند</th><th>المبلغ</th><th>المدفوع منه</th></tr><tr><td>المقدم + دفعة أكتوبر 2026</td><td>${N(R.up)}</td><td></td></tr><tr><td>الأقساط (${R.n} × ${N(R.mo)})</td><td>${N(R.mo*R.n)}</td><td></td></tr>${R.x.map((x,i)=>`<tr><td>${E(x[0])}</td><td>${N(x[1])}</td><td>${inp('re.x.'+i+'.2',x[2])}</td></tr>`).join('')}<tr><td><b>الإجمالي الكلي</b></td><td><b>${N(T)}</b></td><td></td></tr></table></div><span class="mu">رسوم المنصة 8,790 مدرجة ضمن الإجمالي وليست إضافية.</span></section>
+<div class="ks">${kp('المدفوع',N(c.re),P(c.re/T)+' من الإجمالي')}${kp('المتبقي (التزام)',N(c.liab),'أقساط '+N(il)+' + إضافية '+N(xl),'au')}${kp('الأقساط المتبقية',N(n),'تنتهي ≈ '+MN(td(),n).slice(0,7))}${kp('هذا الشهر',pd>=R.mo?'✓ مسدَّد':'مستحق '+N(R.mo-pd),'القسط '+N(R.mo),pd>=R.mo?'up':'dn')}</div>
+<div class="bar"><i style="width:${Math.min(100,c.re/T*100)}%;background:var(--ac)"></i></div>
+<section class="c"><h2>الأقساط القادمة</h2><div class="tb"><table><tr><th>الموعد</th><th>القسط</th><th>المتبقي من الأقساط</th></tr>${sc}</table></div><p class="mu">الدفعات الإضافية (${N(xl)} متبقية) غير مجدولة هنا لأن مواعيدها حسب عقدك. سجّل كل دفعة في الدخل أو العمليات (عقار) وحدّد قيمتها في عمود «المدفوع منه»، فلا تُحتسب من الأقساط. يُحتسب في الثروة ما دُفع فعلًا فقط، والأقساط المستقبلية لا تُخصم من الزكاة تلقائيًا، فاستفتِ في معاملتها.</p></section>`}
+function lv(){const f=$('#inf');if(!f)return;const g=k=>+f[k].value||0,s=AL.reduce((a,x)=>a+g(x[0]),0);$('#lv').textContent='موزَّع '+N(s)+' · الباقي للمصروف '+N(g('te')-s)}
+function auto(){const f=$('#inf'),g=k=>+f[k].value||0,av=Math.max(0,g('te')-g('ex')),re=Math.min(S.re.mo,av),rest=av-re;AL.forEach(x=>f[x[0]].value=x[0]=='RealEstate'?Math.round(re):Math.round(rest*(S.plan[x[0]]||0)/100));lv()}
+function addim(){const f=$('#inf'),g=k=>+f[k].value||0,a={};AL.forEach(x=>a[x[0]]=g(x[0]));if(!/^\d{4}-\d{2}-\d{2}$/.test(f.d.value)||g('te')<0||AL.some(x=>a[x[0]]<0)||g('te')-AL.reduce((s,x)=>s+a[x[0]],0)<-.5){$('#lv').textContent='تحقق من الشهر؛ التوزيع يتجاوز المستلم';return}S.im.push({d:f.d.value,q:g('q'),tq:g('tq'),te:g('te'),a});save();render()}
+document.addEventListener('input',e=>{if(e.target.form&&e.target.form.id=='inf')lv()});
+const KS=['Gold','Stocks','Cert','Crypto','Cash','RE','Library'],KN={Gold:'الذهب',Stocks:'البورصة',Cert:'شهادة فيصل',Crypto:'كريبتو',Cash:'النقدية',RE:'العقار',Library:'المكتبة'},KT={Gold:['Gold'],Stocks:['Stocks','Fee','Tathir','Profit'],Crypto:['Crypto'],Library:['Library'],RE:['RealEstate']},KI={Gold:'Gold',Stocks:'Stocks',Crypto:'Crypto',Library:'Library',RE:'RealEstate',Cash:'Cash'},co=s=>s.replace(/^(ارباح |أرباح )?(توزيعات|إغلاق)\s*/,'').replace(/ جزء$/,'').trim()||s;
+const QK={Stocks:[['dep','إيداع'],['div','توزيعات'],['close','إغلاق صفقة'],['th','تطهير'],['fee','رسوم'],['wd','سحب']],Gold:[['buy','شراء'],['sell','بيع']],Crypto:[['dep','إيداع'],['wd','سحب']],Library:[['dep','إيداع'],['wd','سحب']],RealEstate:[['dep','قسط / دفعة']]},QL={Stocks:'بورصة',Gold:'ذهب',Crypto:'كريبتو',Library:'مكتبة',RealEstate:'عقار'},QD={dep:'إيداع',wd:'سحب',buy:'شراء',sell:'بيع',div:'توزيعات',close:'إغلاق',th:'تطهير',fee:'رسوم'};
+let cur='Gold',Q={i:'Stocks',k:'dep',on:false};
+const nI=n=>`<input name="${n}" type="number" step="any" inputmode="decimal">`;
+function vSheet(){if(!Q.on)return'';const g=Q.i=='Gold',pf=Q.i=='Stocks'&&['div','close'].includes(Q.k),cos=[...new Set(S.tx.filter(x=>x[0]=='Profit').map(x=>co(x[2])))];
+return`<div class="ov"><div class="bd" data-a="qx"></div><div class="sh"><h2>تسجيل سريع</h2><div class="chips">${Object.keys(QK).map(i=>`<button class="${Q.i==i?'on':''}" data-qi="${i}">${QL[i]}</button>`).join('')}</div><div class="chips">${QK[Q.i].map(k=>`<button class="${Q.k==k[0]?'on':''}" data-qk="${k[0]}">${k[1]}</button>`).join('')}</div>
+<form id="qf" onsubmit="return false"><div class="g"><label>التاريخ<input name="d" type="date" value="${td()}"></label>${g?`<label>العيار<select name="kr"><option>24</option><option>21</option><option>18</option></select></label><label>الوزن (جم)${nI('gm')}</label><label>المبلغ (ج.م)${nI('eg')}</label>`:Q.i=='Crypto'?`<label>المبلغ (USDT)${nI('us')}</label>`:`<label>المبلغ (ج.م)${nI('eg')}</label>`}${pf?`<label>السهم<input name="ds" list="cos"></label><datalist id="cos">${cos.map(c=>`<option>${E(c)}</option>`).join('')}</datalist>`:`<label>ملاحظة<input name="ds"></label>`}</div><p class="mu" id="qp"></p><p><button class="p" data-a="qsave">حفظ</button> <button data-a="qx">إلغاء</button> <button data-t="in">دخل شهري ›</button> <button data-t="pf">تحديث رصيد ›</button></p></form></div></div>`}
+const sheet=()=>{$('#sh').innerHTML=vSheet()};
+function qsave(){const f=$('#qf'),n=k=>f[k]?+f[k].value||0:0,i=Q.i,k=Q.k,d=f.d.value||td(),nt=f.ds.value.trim(),sgn=['wd','sell'].includes(k)?-1:1,ds=(['div','close'].includes(k)?QD[k]+' '+nt:nt||QD[k]).trim();let x;
+if(i=='Gold')x=['Gold',d,ds,0,n('gm')*(+f.kr.value)/24*sgn,n('eg')*sgn];else if(i=='Crypto')x=['Crypto',d,ds,n('us')*sgn,0,0];else x=[k=='div'||k=='close'?'Profit':k=='th'?'Tathir':k=='fee'?'Fee':i,d,ds,0,0,n('eg')*sgn];
+if(!(x[3]||x[4]||x[5])){$('#qp').textContent='أدخل المبلغ';return}x[6]=HI.formatShort(HI.toHijriFromISO(d));S.tx.push(x);save();Q.on=false;sheet();render();st('سُجّل: '+ds)}
+function qsnap(){const l=$('#ql').value.trim();if(!l)return;const c=C(),i=S.q.findIndex(x=>x[0]==l);if(i<0)S.q.push([l,c.total]);else S.q[i][1]=c.total;S.q.sort((a,b)=>a[0]<b[0]?-1:1);save();tab='ov';render()}
+function lg(k){const r=[];S.tx.forEach((x,i)=>{if((KT[k]||[]).includes(x[0]))r.push({d:x[1],s:x[2]+(x[4]?' · '+N(x[4],3)+' جم':'')+(k=='Stocks'&&x[0]!='Stocks'?' ('+TY[x[0]]+')':''),a:k=='Crypto'?x[3]:x[5],i,ty:x[0]})});
+S.im.forEach(m=>{if(m.a[KI[k]])r.push({d:m.d,s:'من دخل '+m.d.slice(0,7),a:m.a[KI[k]],i:-1,ty:KI[k]})});r.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);let run=0;r.forEach(x=>{run+=k!='Stocks'||x.ty==KI[k]?x.a:0;x.run=run});return r}
+const sp=v=>{if(v.length<2)return'';const mx=Math.max(...v),mn=Math.min(...v,0);return`<svg viewBox="0 0 300 56" width="100%" height="56" preserveAspectRatio="none"><polyline points="${v.map((y,i)=>(i/(v.length-1)*300).toFixed(1)+','+(54-(y-mn)/(mx-mn||1)*52).toFixed(1)).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`};
+function vInv(c){return`<div class="il">${KS.map((k,j)=>{const r=c.rows[j],b={Gold:c.goldC,Stocks:c.inv,Crypto:c.cap*c.u,Library:c.libC,Cert:S.cert.p}[k],pl=b===undefined?null:r[1]-b;return`<button class="ir" data-st="${k}"><s style="background:${r[3]}"></s><span><b>${KN[k]}</b><i>${P(r[1]/c.total)} من المحفظة</i></span><span><b>${N(r[1])}</b>${pl===null?`<i>${k=='RE'?P(RT()?c.re/RT():0)+' من الخطة':'سيولة'}</i>`:`<i class="${cl(pl)}">${sg(pl)} · ${P(b?pl/b:0)}</i>`}</span></button>`}).join('')}</div>`}
+function vSt(c){const k=cur,L=lg(k),R=c.rows[KS.indexOf(k)],val=R[1],b={Gold:c.goldC,Stocks:c.inv,Crypto:c.cap*c.u,Cert:S.cert.p,Library:c.libC}[k],pl=val-b,fx={USD:c.u,QAR:c.u/3.65,SAR:c.u/3.65,EGP:1};let x='';
+if(k=='Gold')x=`<section class="c"><h2>المشتريات</h2><div class="tb"><table><tr><th>التاريخ</th><th>البيان</th><th>جرام 24</th><th>التكلفة</th><th>سعر الجرام</th><th>الربح</th></tr>${S.tx.filter(t=>t[0]=='Gold'&&t[4]>0&&t[5]>0).map(t=>{const v=t[4]*c.gp;return`<tr><td>${E(t[1])}</td><td>${E(t[2])}</td><td>${N(t[4],3)}</td><td>${N(t[5])}</td><td>${N(t[5]/t[4])}</td><td class="${cl(v-t[5])}">${P(v/t[5]-1)}</td></tr>`}).join('')}</table></div><p class="mu">الوزن ${N(c.g,3)} جم · متوسط التكلفة ${N(c.goldC/c.g)} · سعر اليوم ${N(c.gp)} ج/جم</p></section>`;
+else if(k=='Stocks'){const m={};S.tx.filter(t=>t[0]=='Profit').forEach(t=>{const n=co(t[2]);m[n]=m[n]||[0,0];m[n][/توزيع/.test(t[2])?0:1]+=t[5]});x=`<div class="ks">${kp('المستثمر',N(c.inv),'إيداع '+N(c.dep)+' · رسوم '+N(c.fee)+' · تطهير '+N(c.th))}${kp('غير المحقق',sg(S.man.sm-S.man.cb),'سوقي − Cost Basis',cl(S.man.sm-S.man.cb))}${kp('محقق صافٍ',N(c.prof),'بعد التطهير والرسوم','up')}</div><section class="c"><h2>الأرباح المحققة حسب السهم</h2><div class="tb"><table><tr><th>السهم</th><th>توزيعات</th><th>إغلاق</th><th>الإجمالي</th></tr>${Object.entries(m).sort((a,b)=>b[1][0]+b[1][1]-a[1][0]-a[1][1]).map(z=>`<tr><td>${E(z[0])}</td><td>${N(z[1][0])}</td><td>${N(z[1][1])}</td><td><b>${N(z[1][0]+z[1][1])}</b></td></tr>`).join('')}</table></div></section>`}
+else if(k=='Crypto')x=`<div class="ks">${kp('رأس المال',N(c.cap,2)+' USDT')}${kp('الرصيد',N(S.man.cr,2)+' USDT','حتى '+S.man.cd)}${kp('الخسارة',P(c.cap?S.man.cr/c.cap-1:0),N(c.cap-S.man.cr,2)+' USDT','dn')}</div>`;
+else if(k=='Cert'){const cc=certCalc();x=`<section class="c"><h2>أرباح الأرباع</h2><div class="tb"><table><tr><th>الاستحقاق</th><th>النسبة</th><th>الربح</th><th>الرصيد</th></tr>${cc.rows.map(r=>`<tr><td>${r.date}${r.earned?' ✓':' (متوقع)'}</td><td>${P(r.rate)}</td><td>${N(r.profit)}</td><td>${N(r.balance)}</td></tr>`).join('')}</table></div><p class="mu">الأصل ${N(S.cert.c)} · الأرباح المستحقة ${N(cc.value-S.cert.c)}</p></section>`}
+else if(k=='Cash')x=`<section class="c"><h2>الأرصدة</h2><div class="tb"><table>${S.cash.map(i=>`<tr><td>${E(i[0])}</td><td>${N(i[2])} ${E(i[1])}</td><td>${N(i[2]*fx[i[1]])}</td></tr>`).join('')}<tr><td>مخصّص من الدخل</td><td></td><td>${N(c.inc.cash)}</td></tr></table></div></section>`;
+else if(k=='RE')x=vRe(c);
+const kk=['Cash','RE','Cert'].includes(k)?'':`<div class="ks">${kp(k=='Stocks'?'المستثمر':'التكلفة',N(b))}${kp('الربح / الخسارة',sg(pl),P(b?pl/b:0),cl(pl))}</div>`;
+const lt=['Cash','Cert'].includes(k)?'':`<section class="c"><h2>كشف الحركة</h2>${sp(L.map(r=>r.run))}<div class="tb sc"><table><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th><th>الرصيد</th><th></th></tr>${[...L].reverse().map(r=>`<tr><td>${E(r.d)}</td><td>${E(r.s)}</td><td class="${r.ty=='Profit'?'up':''}">${N(r.a,k=='Crypto'?2:0)}</td><td>${N(r.run,k=='Crypto'?2:0)}</td><td>${r.i<0?'':`<button data-a="del" data-i="${r.i}">حذف</button>`}</td></tr>`).join('')}</table></div></section>`;
+return`<p><button data-t="inv">‹ الاستثمارات</button></p><div class="hero"><small><s style="background:${R[3]}"></s>${KN[k]}</small><b>${N(val)}</b><small>${P(c.total?val/c.total:0)} من المحفظة${k=='Crypto'?' · '+N(S.man.cr,2)+' USDT':''}</small></div>${kk}${x}${lt}`}
+function backupError(message){const e=$('#ms');if(e)e.textContent=message}
+function validBackup(x){return !!x&&typeof x==='object'&&Array.isArray(x.tx)&&x.man&&typeof x.man==='object'&&Array.isArray(x.im)&&x.cert&&x.re&&x.plan}
+async function restoreBackupFile(){const input=$('#backupFile'),file=input?.files?.[0];if(!file){backupError('اختر ملف JSON أولًا');return}if(file.size>10*1024*1024){backupError('حجم الملف أكبر من الحد المسموح (10 ميجابايت)');return}try{const text=await file.text(),data=JSON.parse(text);if(!validBackup(data))throw Error('schema');if(!confirm('سيتم استبدال البيانات الحالية ببيانات الملف. هل تريد المتابعة؟'))return;S=data;mig();if(await save()){tab='ov';render();st('تمت استعادة النسخة من الملف بنجاح')}}catch(e){backupError('تعذر قراءة الملف: تأكد أنه نسخة JSON صحيحة من التطبيق')}}
+const ms=t=>{const e=$('#ms');if(e)e.textContent=t};
+document.addEventListener('change',e=>{if(e.target.id==='backupFile'){const f=e.target.files?.[0],m=$('#backupMeta');if(m)m.textContent=f?`${f.name} · ${(f.size/1024).toFixed(1)} ك.ب`:'اختر ملفًا من جهازك';backupError('');return}const t=e.target;if(t.dataset.f){flt=t.value;return render()}if(t.dataset.fy){fltYear=t.value;return render()}if(t.dataset.fm){fltMo=t.value;return render()}if(t.dataset.fq){fltQ=t.value.trim();return render()}const p=t.dataset.p;if(!p)return;const k=p.split('.');let o=S;while(k.length>1)o=o[k.shift()];o[k[0]]=t.type=='number'?+t.value:t.value;save();render()});
+document.addEventListener('change',e=>{if(e.target.id==='yearSel'){S.currentHijriYear=+e.target.value||HI.cycleOf(td()).year;save();const lv2=$('#live');if(lv2)lv2.textContent='تم اختيار سنة '+S.currentHijriYear+' هـ';render();return}if(e.target.id==='gSw'){S.showGregorian=e.target.checked;save();render()}});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-t],[data-a],[data-st],[data-qi],[data-qk]');if(!b)return;const d=b.dataset;if(d.qi){Q.i=d.qi;Q.k=QK[Q.i][0][0];return sheet()}if(d.qk){Q.k=d.qk;return sheet()}if(d.st){cur=d.st;tab='st';render();return scrollTo(0,0)}if(d.t){Q.on=false;sheet();tab=d.t;render();return scrollTo(0,0)}const a=b.dataset.a;
+if(a=='restoreFile')return restoreBackupFile();
+if(a=='add'){const f=$('#tf'),n=k=>Number.isFinite(+f[k].value)?+f[k].value:0,dtv=f.dt.value||td(),desc=f.ds.value.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(dtv)||!desc||(!n('us')&&!n('gm')&&!n('eg'))){st('تحقق من التاريخ والوصف والمبلغ');return}S.tx.push([f.ty.value,dtv,desc,n('us'),n('gm'),n('eg'),HI.formatShort(HI.toHijriFromISO(dtv))]);save();render();st('تمت إضافة العملية')}
+else if(a=='del'){if(b.dataset.s!='1'){b.dataset.s='1';b.textContent='تأكيد؟';return}S.tx.splice(+b.dataset.i,1);save();render()}
+else if(a=='bk'){try{const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='portfolio-backup-'+td()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);ms('تم تنزيل النسخة الاحتياطية')}catch(x){ms('لم يتم التنزيل')}}
+else if(a=='rs'){try{const j=JSON.parse($('#rs').value);if(!j||!Array.isArray(j.tx)||!j.man)throw 0;S=j;mig();await save();tab='ov';render();ms('تمت الاستعادة بنجاح')}catch(x){ms('محتوى النسخة غير صالح')}}
+else if(a=='qo'){Q.on=true;sheet()}else if(a=='qx'){Q.on=false;sheet()}else if(a=='qsave')qsave();else if(a=='qsnap')qsnap();else if(a=='auto')auto();else if(a=='addzk')addZakatYear();else if(a=='addim')addim();else if(a=='delim'){if(b.dataset.s!='1'){b.dataset.s='1';b.textContent='تأكيد؟';return}S.im.splice(+b.dataset.i,1);save();render()}else if(a=='rz'){if(b.dataset.s!='1'){b.dataset.s='1';b.textContent='تأكيد؟ سيُمحى كل تعديل';return}S=JSON.parse(JSON.stringify(SEED));mig();save();tab='ov';render()}});
 
-  const ASSET_META = {
-    stocks:      { label: 'البورصة',    color: '#277da1' },
-    gold:        { label: 'الذهب',      color: '#c99a2e' },
-    crypto:      { label: 'الكريبتو',   color: '#8a63a8' },
-    cash:        { label: 'النقدية',    color: '#7fa35c' },
-    realEstate:  { label: 'العقار',     color: '#b5694a' },
-    certificate: { label: 'الشهادة',    color: '#6c7fa0' },
-  };
-
-  const TABS = [
-    ['overview',     'نظرة عامة'],
-    ['transactions', 'العمليات'],
-    ['income',       'الدخل'],
-    ['certificate',  'الشهادة'],
-    ['zakat',        'الزكاة'],
-    ['backup',       'النسخ'],
-  ];
-
-  const TX_TYPES = ['إيداع', 'شراء ذهب', 'بورصة', 'كريبتو', 'مصروف', 'أرباح', 'عقار'];
-
-  /* ============ أدوات ============ */
-  const $ = (s, r = document) => r.querySelector(s);
-  const esc = (x) => String(x ?? '').replace(/[&<>"']/g, (c) =>
-    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const num = (x) => { const n = Number(x); return Number.isFinite(n) ? n : 0; };
-  const n = (x, d = 0) => num(x).toLocaleString('en-US', {
-    maximumFractionDigits: d, minimumFractionDigits: d,
-  });
-  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-  const todayISO = () => new Date().toISOString().slice(0, 10);
-  const monthISO = () => new Date().toISOString().slice(0, 7);
-  const yearISO  = () => new Date().getFullYear();
-  const stampISO = () => new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-
-  /* ============ Toast ============ */
-  let toastTimer;
-  function notify(text, type = 'ok') {
-    const el = $('#toast');
-    if (!el) return;
-    el.textContent = text;
-    el.className = 'show' + (type === 'error' ? ' err' : type === 'warn' ? ' warn' : '');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show', 'err', 'warn'), 2800);
+// Theme
+(function(){
+  const btn = document.getElementById('tbtn');
+  if(!btn) return;
+  function apply(th){
+    document.documentElement.setAttribute('data-theme', th);
+    btn.textContent = th === 'dark' ? '☀' : '☾';
+    try{ localStorage.setItem('theme', th); }catch(e){}
   }
-
-  /* ============ حالة الحفظ (شريط st) ============ */
-  let statusTimer;
-  function setStatus(text, cls = '') {
-    const el = $('#st');
-    if (!el) return;
-    el.textContent = text;
-    el.className = cls;
-    clearTimeout(statusTimer);
-    statusTimer = setTimeout(() => {
-      el.textContent = '';
-      el.className = '';
-    }, 2200);
-  }
-
-  /* ============ الحالة ============ */
-  const seed = () => ({
-    version: 5,
-    updatedAt: '',
-    currentYear: yearISO(),
-    prices: { usd: 56, goldOz: 3880 },
-    assets: { stocks: 0, gold: 0, crypto: 0, cash: 0, realEstate: 0, certificate: 0 },
-    transactions: [],
-    income: [],
-    certificate: { principal: 0, rates: [0, 0, 0, 0] },
-    zakat: { year: 0, base: 0, paid: 0, history: [] },
-    annualArchive: {}, // { "2024": { snapshot... } }
-  });
-
-  let state = seed();
-  let tab = 'overview';
-  let saveTimer = null;
-  let deferredPrompt = null;
-
-  /* ============ التطبيع والترحيل ============ */
-  function normalize(raw) {
-    const d = seed();
-    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('invalid');
-
-    // ترحيل v3 القديم (man/tx/im)
-    if (!raw.assets && (raw.man || raw.tx || raw.im)) {
-      const m = raw.man || {};
-      const oldTx = Array.isArray(raw.tx) ? raw.tx.filter(Array.isArray) : [];
-      const oldIm = Array.isArray(raw.im) ? raw.im.filter(Array.isArray) : [];
-      const usd = num(raw.usd) || d.prices.usd;
-      raw = {
-        ...raw,
-        prices: { usd, goldOz: num(raw.oz) || d.prices.goldOz },
-        assets: {
-          stocks: num(m.sm),
-          gold: oldTx.filter((r) => r[0] === 'Gold').reduce((a, r) => a + num(r[4]), 0),
-          crypto: num(m.cr),
-          cash: Array.isArray(raw.cash)
-            ? raw.cash.filter(Array.isArray).reduce((a, r) => {
-                const rate = r[1] === 'SAR' ? usd / 3.75 : r[1] === 'QAR' ? usd / 3.65 : 1;
-                return a + num(r[2]) * rate;
-              }, 0)
-            : 0,
-          realEstate: oldTx.filter((r) => r[0] === 'RealEstate').reduce((a, r) => a + num(r[5]), 0),
-          certificate: num(raw.cert?.c ?? raw.cert?.p),
-        },
-        transactions: oldTx.map((r) => ({
-          id: uid(), date: String(r[1] || ''), type: String(r[0] || 'عملية'),
-          note: String(r[2] || ''), amount: num(r[5]),
-        })),
-        income: oldIm.map((r) => ({
-          id: uid(), date: String(r.d || ''), income: num(r.q),
-          transferredSar: num(r.tq), transferred: num(r.te),
-        })),
-        certificate: {
-          principal: num(raw.cert?.c ?? raw.cert?.p),
-          rates: Array.isArray(raw.cert?.r) ? raw.cert.r.slice(0, 4).map(num) : [0, 0, 0, 0],
-        },
-        zakat: {
-          year: num(raw.zk?.year), base: num(raw.zk?.base),
-          paid: num(raw.zk?.paid),
-          history: Array.isArray(raw.zk?.h) ? raw.zk.h.filter(Array.isArray) : [],
-        },
-      };
-    }
-
-    const o = { ...d, ...raw };
-    o.prices = { ...d.prices, ...(raw.prices || {}) };
-    o.prices.usd = Math.max(0, num(o.prices.usd));
-    o.prices.goldOz = Math.max(0, num(o.prices.goldOz));
-
-    o.assets = { ...d.assets, ...(raw.assets || {}) };
-    for (const k of Object.keys(d.assets)) o.assets[k] = Math.max(0, num(o.assets[k]));
-
-    o.certificate = { ...d.certificate, ...(raw.certificate || {}) };
-    let rates = Array.isArray(o.certificate.rates) ? o.certificate.rates.slice(0, 4).map(num) : [];
-    while (rates.length < 4) rates.push(0);
-    o.certificate.rates = rates.map((r) => clamp(r, 0, 100));
-    o.certificate.principal = Math.max(0, num(o.certificate.principal));
-
-    o.transactions = Array.isArray(o.transactions)
-      ? o.transactions.filter((r) => r && typeof r === 'object').map((r) => ({
-          id: ID_REGEX.test(r.id || '') ? r.id : uid(),
-          date: String(r.date || '').slice(0, 10),
-          type: String(r.type || 'عملية').slice(0, 40),
-          note: String(r.note || '').slice(0, 120),
-          amount: Math.max(0, num(r.amount)),
-          year: num(r.year) || (r.date ? +String(r.date).slice(0, 4) : 0),
-        }))
-      : [];
-
-    o.income = Array.isArray(o.income)
-      ? o.income.filter((r) => r && typeof r === 'object').map((r) => ({
-          id: ID_REGEX.test(r.id || '') ? r.id : uid(),
-          date: String(r.date || '').slice(0, 7),
-          income: Math.max(0, num(r.income)),
-          transferredSar: Math.max(0, num(r.transferredSar)),
-          transferred: Math.max(0, num(r.transferred)),
-        }))
-      : [];
-
-    o.zakat = { ...d.zakat, ...(raw.zakat || {}) };
-    o.zakat.year = num(o.zakat.year);
-    o.zakat.base = Math.max(0, num(o.zakat.base));
-    o.zakat.paid = Math.max(0, num(o.zakat.paid));
-    o.zakat.history = Array.isArray(o.zakat.history)
-      ? o.zakat.history.filter((r) => Array.isArray(r) && r.length >= 3)
-      : [];
-
-    o.annualArchive = (raw.annualArchive && typeof raw.annualArchive === 'object')
-      ? raw.annualArchive : {};
-
-    o.currentYear = clamp(num(o.currentYear) || yearISO(), 1900, 2200);
-    o.version = 5;
-    return o;
-  }
-
-  /* ============ الحفظ ============ */
-  function saveNow(silent = false) {
-    try {
-      state.updatedAt = new Date().toISOString();
-      localStorage.setItem(KEY, JSON.stringify(state));
-      if (!silent) {
-        notify('تم الحفظ');
-        setStatus('✓ محفوظ', 'saved');
-      }
-      return true;
-    } catch (e) {
-      console.error(e);
-      notify('تعذر الحفظ — قد تكون الذاكرة ممتلئة', 'error');
-      setStatus('✗ تعذر الحفظ', 'error');
-      return false;
-    }
-  }
-
-  function save(silent = false) {
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => saveNow(silent), SAVE_DEBOUNCE_MS);
-  }
-
-  function load() {
-    try {
-      let raw = null, usedKey = null;
-      for (const k of [KEY, ...LEGACY_KEYS]) {
-        const v = localStorage.getItem(k);
-        if (v) { raw = v; usedKey = k; break; }
-      }
-      if (!raw) return;
-      state = normalize(JSON.parse(raw));
-      if (usedKey !== KEY) {
-        saveNow(true);
-        LEGACY_KEYS.forEach((k) => { try { localStorage.removeItem(k); } catch {} });
-      }
-    } catch (e) {
-      console.error(e);
-      state = seed();
-      notify('تعذر قراءة البيانات؛ بدأنا بخزنة جديدة', 'error');
-    }
-  }
-
-  /* ============ التقويم الهجري ============ */
-  const hijriFmt = (() => {
-    try {
-      return new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', {
-        year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC',
-      });
-    } catch {
-      try {
-        return new Intl.DateTimeFormat('en-u-ca-islamic', {
-          year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC',
-        });
-      } catch { return null; }
-    }
-  })();
-
-  function hijriParts(date = new Date()) {
-    if (!hijriFmt) return { year: 0, month: 0, day: 0 };
-    try {
-      const r = {};
-      hijriFmt.formatToParts(date).forEach((p) => {
-        if (['year', 'month', 'day'].includes(p.type)) r[p.type] = +p.value;
-      });
-      return r;
-    } catch { return { year: 0, month: 0, day: 0 }; }
-  }
-
-  function dueFor(hijriYear) {
-    if (!Number.isInteger(hijriYear) || hijriYear < 1300 || hijriYear > 1600) return '';
-    if (!hijriFmt) return '';
-    const approx = Math.floor(hijriYear * 0.970224 + 621.5774);
-    const from = new Date(Date.UTC(approx - 1, 8, 1));
-    const to = new Date(Date.UTC(approx + 1, 5, 30));
-    for (const d = new Date(from); d <= to; d.setUTCDate(d.getUTCDate() + 1)) {
-      const h = hijriParts(d);
-      if (h.year === hijriYear && h.month === 8 && h.day === 3) {
-        return d.toISOString().slice(0, 10);
-      }
-    }
-    return '';
-  }
-
-  function cycle() {
-    const now = new Date();
-    const h = hijriParts(now);
-    if (!h.year) {
-      const gy = now.getUTCFullYear();
-      const approximate = Math.floor((gy - 622) * 1.030684);
-      return { year: approximate, due: '', nextDue: '' };
-    }
-    const dueThis = dueFor(h.year);
-    const year = dueThis && now >= new Date(dueThis + 'T00:00:00Z') ? h.year : h.year - 1;
-    return { year, due: dueFor(year), nextDue: dueFor(year + 1) };
-  }
-
-  /* ============ الحسابات ============ */
-  const goldGrams = () => num(state.assets.gold);
-  const goldPricePerGram = () => num(state.prices.goldOz) / OZ_IN_GRAM;
-  const goldValue = () => goldGrams() * goldPricePerGram() * num(state.prices.usd);
-  const cryptoValue = () => num(state.assets.crypto) * num(state.prices.usd);
-  const certCompoundValue = () =>
-    state.certificate.rates.reduce(
-      (b, r) => b * (1 + clamp(num(r), 0, 100) / 100),
-      Math.max(0, num(state.certificate.principal))
-    );
-
-  function syncCertAsset() {
-    state.assets.certificate = certCompoundValue();
-  }
-
-  function assetValues() {
-    return {
-      stocks: Math.max(0, num(state.assets.stocks)),
-      gold: goldValue(),
-      crypto: cryptoValue(),
-      cash: Math.max(0, num(state.assets.cash)),
-      realEstate: Math.max(0, num(state.assets.realEstate)),
-      certificate: certCompoundValue(),
-    };
-  }
-
-  function total() {
-    return Object.values(assetValues()).reduce((a, b) => a + b, 0);
-  }
-
-  /* ============ نظام السنوات ============ */
-  function yearOptions() {
-    const cur = state.currentYear;
-    const years = new Set();
-    for (let y = cur - YEARS_TO_SHOW + 1; y <= cur + 1; y++) years.add(y);
-    state.transactions.forEach((t) => { if (t.year) years.add(t.year); });
-    if (state.annualArchive) Object.keys(state.annualArchive).forEach((y) => years.add(+y));
-    return [...years].filter((y) => y > 1900 && y < 2200).sort((a, b) => b - a);
-  }
-
-  function drawYearSelect() {
-    const sel = $('#yearSel');
-    if (!sel) return;
-    const years = yearOptions();
-    sel.innerHTML = years.map((y) =>
-      `<option value="${y}" ${y === state.currentYear ? 'selected' : ''}>${y}</option>`
-    ).join('');
-  }
-
-  /* ============ الزكاة ============ */
-  function ensureZakat(persist = false) {
-    const c = cycle();
-    let changed = false;
-    if (!Number.isInteger(+state.zakat.year) || +state.zakat.year < 1300) {
-      state.zakat.year = c.year;
-      state.zakat.base = total();
-      state.zakat.paid = 0;
-      changed = true;
-    } else if (+state.zakat.year !== c.year) {
-      state.zakat.history.push([
-        `${state.zakat.year} هـ — 3 شعبان إلى 2 شعبان`,
-        num(state.zakat.base),
-        num(state.zakat.paid),
-      ]);
-      state.zakat.year = c.year;
-      state.zakat.base = total();
-      state.zakat.paid = 0;
-      changed = true;
-    }
-    if (changed) {
-      if (persist) saveNow(true);
-      else save(true);
-    }
-    return changed;
-  }
-
-  /* ============ بطاقات ============ */
-  const card = (label, value, sub = '') =>
-    `<div class="k"><span>${esc(label)}</span><b>${value}</b>${sub ? `<i>${sub}</i>` : ''}</div>`;
-
-  /* ============ تبويبات ============ */
-  function drawTabs() {
-    const el = $('#tabs');
-    if (!el) return;
-    el.innerHTML = TABS.map(([id, label]) =>
-      `<button role="tab" aria-selected="${tab === id}" data-tab="${id}">${label}</button>`
-    ).join('');
-  }
-
-  /* ============ نظرة عامة ============ */
-  function overview() {
-    const c = cycle();
-    const vals = assetValues();
-    const t = Object.values(vals).reduce((a, b) => a + b, 0);
-    const zakatDue = Math.max(0, num(state.zakat.base) * ZAKAT_RATE - num(state.zakat.paid));
-    const incomeTotal = state.income
-      .filter((r) => !r.date || r.date.startsWith(String(state.currentYear)))
-      .reduce((a, r) => a + num(r.transferred), 0);
-
-    const segments = Object.entries(ASSET_META).map(([k, meta]) => {
-      const pct = t > 0 ? (vals[k] / t) * 100 : 0;
-      return `<i style="width:${pct}%;background:${meta.color}" title="${meta.label}: ${n(vals[k])} ${CURRENCY} (${n(pct, 1)}%)"></i>`;
-    }).join('');
-
-    const legend = Object.entries(ASSET_META).map(([k, meta]) => {
-      const pct = t > 0 ? (vals[k] / t) * 100 : 0;
-      return `<div style="font-size:13px"><s style="background:${meta.color}"></s><b>${meta.label}</b>
-        <div class="mu" style="font-size:12px;margin-inline-start:16px">${n(vals[k])} ${CURRENCY} — ${n(pct, 1)}%</div></div>`;
-    }).join('');
-
-    return `
-<section class="hero">
-  <small>إجمالي المحفظة</small>
-  <b>${n(t)} <span style="font-size:.45em;font-weight:400;color:var(--mu)">${CURRENCY}</span></b>
-  <div style="font-size:12px;color:var(--mu);margin-top:4px">دورة الزكاة ${state.zakat.year} هـ — ${c.due || '—'}</div>
-</section>
-
-<div class="bar" role="img" aria-label="توزيع الأصول">${segments}</div>
-
-<div class="c">
-  <h2>توزيع الأصول</h2>
-  <div class="ks" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">${legend}</div>
-</div>
-
-<div class="ks">
-  ${card('الزكاة المتبقية', n(zakatDue, 2) + ' ' + CURRENCY, `من ${n(num(state.zakat.base) * ZAKAT_RATE, 2)}`)}
-  ${card('إجمالي الدخل ' + state.currentYear, n(incomeTotal) + ' ' + CURRENCY, `${state.income.filter((r) => !r.date || r.date.startsWith(String(state.currentYear))).length} شهر`)}
-  ${card('عدد العمليات ' + state.currentYear, n(state.transactions.filter((t) => t.year === state.currentYear).length), 'سجل العمليات')}
-</div>
-
-<div class="c">
-  <h2>أسعار الصرف</h2>
-  <div class="g">
-    <label>سعر الدولار (${CURRENCY})
-      <input type="number" min="0" step="any" data-price="usd" value="${num(state.prices.usd)}">
-    </label>
-    <label>سعر أونصة الذهب (USD)
-      <input type="number" min="0" step="any" data-price="goldOz" value="${num(state.prices.goldOz)}">
-    </label>
-    <div style="align-self:end;font-size:13px;color:var(--mu)">
-      سعر الجرام ≈ <b data-gram-price style="color:var(--ink)">${n(goldPricePerGram() * num(state.prices.usd), 2)}</b> ${CURRENCY}
-    </div>
-  </div>
-</div>
-
-<div class="c">
-  <h2>معلومات</h2>
-  <p class="mu" style="font-size:13px;margin:0">الحفظ محلي على هذا الجهاز. دورة الزكاة من <b>3 شعبان</b> إلى <b>2 شعبان</b>، محسوبة بتقويم أم القرى (UTC).</p>
-</div>`;
-  }
-
-  /* ============ العمليات ============ */
-  function transactions() {
-    const yearTxs = state.transactions.filter((t) => t.year === state.currentYear);
-    const sorted = yearTxs.slice().reverse();
-    const rows = sorted.map((r) => `
-      <tr>
-        <td>${esc(r.date || '—')}</td>
-        <td>${esc(r.type)}</td>
-        <td>${esc(r.note)}</td>
-        <td>${n(r.amount)} ${CURRENCY}</td>
-        <td><button type="button" class="d" data-delete-tx="${esc(r.id)}" aria-label="حذف">حذف</button></td>
-      </tr>`).join('');
-    const sum = yearTxs.reduce((a, r) => a + num(r.amount), 0);
-
-    return `
-<div class="c">
-  <h2>إضافة عملية</h2>
-  <form id="txForm" novalidate>
-    <div class="g">
-      <label>التاريخ<input name="date" type="date" required value="${todayISO()}" max="${todayISO()}"></label>
-      <label>النوع
-        <select name="type">${TX_TYPES.map((t) => `<option>${t}</option>`).join('')}</select>
-      </label>
-      <label>الوصف<input name="note" required maxlength="120" placeholder="مثال: شراء 5 جرام"></label>
-      <label>المبلغ (${CURRENCY})<input name="amount" type="number" min="0" step="any" required></label>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button type="submit" class="p">إضافة</button>
-    </div>
-  </form>
-</div>
-
-<div class="c">
-  <h2>عمليات ${state.currentYear} (${yearTxs.length})</h2>
-  ${yearTxs.length
-    ? `<div class="tb"><table>
-        <thead><tr><th>التاريخ</th><th>النوع</th><th>الوصف</th><th>المبلغ</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-        <tfoot><tr><th colspan="3" style="text-align:end">الإجمالي</th><th>${n(sum)} ${CURRENCY}</th><th></th></tr></tfoot>
-      </table></div>`
-    : '<div class="empty">لا توجد عمليات لهذه السنة</div>'}
-</div>`;
-  }
-
-  /* ============ الدخل ============ */
-  function income() {
-    const yearIncomes = state.income.filter((r) => !r.date || r.date.startsWith(String(state.currentYear)));
-    const totals = yearIncomes.reduce((a, r) => ({
-      income: a.income + num(r.income),
-      sar: a.sar + num(r.transferredSar),
-      egp: a.egp + num(r.transferred),
-    }), { income: 0, sar: 0, egp: 0 });
-
-    const rows = yearIncomes.slice().reverse().map((r) => `
-      <tr>
-        <td>${esc(r.date)}</td>
-        <td>${n(r.income)}</td>
-        <td>${n(r.transferredSar)}</td>
-        <td>${n(r.transferred)}</td>
-        <td><button type="button" class="d" data-delete-income="${esc(r.id)}">حذف</button></td>
-      </tr>`).join('');
-
-    return `
-<div class="c">
-  <h2>إضافة شهر دخل</h2>
-  <form id="incomeForm" novalidate>
-    <div class="g">
-      <label>الشهر<input name="date" type="month" required value="${monthISO()}"></label>
-      <label>الدخل بالريال<input name="income" type="number" min="0" step="any"></label>
-      <label>المحوّل بالريال<input name="transferredSar" type="number" min="0" step="any"></label>
-      <label>المستلم (${CURRENCY})<input name="transferred" type="number" min="0" step="any"></label>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button type="submit" class="p">حفظ</button>
-    </div>
-  </form>
-</div>
-
-<div class="c">
-  <h2>دخل ${state.currentYear} (${yearIncomes.length})</h2>
-  ${yearIncomes.length
-    ? `<div class="tb"><table>
-        <thead><tr><th>الشهر</th><th>الدخل ر.س</th><th>المحوّل ر.س</th><th>المستلم ${CURRENCY}</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-        <tfoot><tr><th>الإجمالي</th><th>${n(totals.income)}</th><th>${n(totals.sar)}</th><th>${n(totals.egp)}</th><th></th></tr></tfoot>
-      </table></div>`
-    : '<div class="empty">لا توجد أشهر لهذه السنة</div>'}
-</div>`;
-  }
-
-  /* ============ الشهادة ============ */
-  function certificate() {
-    const c = state.certificate;
-    const bal = certCompoundValue();
-    const profit = bal - num(c.principal);
-    return `
-<div class="c">
-  <h2>شهادة فيصل — أرباح ربع سنوية</h2>
-  <form id="certForm" novalidate>
-    <div class="g">
-      <label>أصل الشهادة (${CURRENCY})
-        <input name="principal" type="number" min="0" step="any" value="${num(c.principal)}">
-      </label>
-      ${c.rates.map((r, i) => `
-        <label>الربع ${i + 1} (%)
-          <input name="r${i}" type="number" min="0" max="100" step="any" value="${num(r)}">
-        </label>`).join('')}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px">
-      <button type="submit" class="p">حفظ</button>
-    </div>
-  </form>
-  <div class="notice" style="margin-top:12px">
-    الرصيد التراكمي: <b>${n(bal, 2)} ${CURRENCY}</b>
-    &nbsp;—&nbsp; صافي الأرباح: <b>${n(profit, 2)} ${CURRENCY}</b>
-  </div>
-</div>`;
-  }
-
-  /* ============ الزكاة ============ */
-  function zakat() {
-    ensureZakat();
-    const c = cycle();
-    const base = num(state.zakat.base);
-    const dueAmt = base * ZAKAT_RATE;
-    const remaining = Math.max(0, dueAmt - num(state.zakat.paid));
-    const pct = dueAmt > 0 ? clamp((num(state.zakat.paid) / dueAmt) * 100, 0, 100) : 0;
-
-    const histRows = state.zakat.history.slice().reverse().map((r) => {
-      const b = num(r[1]), p = num(r[2]), dd = b * ZAKAT_RATE;
-      return `<tr>
-        <td>${esc(r[0])}</td>
-        <td>${n(b)}</td>
-        <td>${n(dd, 2)}</td>
-        <td>${n(p, 2)}</td>
-        <td class="${dd - p > 0 ? 'dn' : 'up'}">${n(dd - p, 2)}</td>
-      </tr>`;
-    }).join('');
-
-    return `
-<div class="c">
-  <h2>زكاة دورة ${state.zakat.year} هـ</h2>
-  <div class="notice">الدورة: <b>3 شعبان → 2 شعبان</b> — الموعد الميلادي (UTC): <b>${c.due || '—'}</b></div>
-  <div class="ks">
-    ${card('الأساس', n(base) + ' ' + CURRENCY)}
-    ${card('المستحق', n(dueAmt, 2) + ' ' + CURRENCY)}
-    ${card('المدفوع', n(state.zakat.paid, 2) + ' ' + CURRENCY)}
-    ${card('المتبقي', n(remaining, 2) + ' ' + CURRENCY)}
-  </div>
-  <div class="progress" role="progressbar" aria-valuenow="${n(pct, 0)}" aria-valuemin="0" aria-valuemax="100">
-    <i style="width:${pct}%"></i>
-  </div>
-  <form id="zakatForm" novalidate style="margin-top:12px">
-    <div class="g">
-      <label>أساس الدورة (${CURRENCY})
-        <input name="base" type="number" min="0" step="any" value="${base}">
-      </label>
-      <label>المدفوع (${CURRENCY})
-        <input name="paid" type="number" min="0" step="any" value="${num(state.zakat.paid)}">
-      </label>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-      <button type="submit" class="p">حفظ</button>
-      <button type="button" data-action="zakat-sync">مزامنة الأساس</button>
-    </div>
-  </form>
-</div>
-
-<div class="c">
-  <h2>الدورات السابقة</h2>
-  ${state.zakat.history.length
-    ? `<div class="tb"><table>
-        <thead><tr><th>الدورة</th><th>الأساس</th><th>المستحق</th><th>المدفوع</th><th>المتبقي</th></tr></thead>
-        <tbody>${histRows}</tbody></table></div>`
-    : '<div class="empty">لا توجد دورات سابقة</div>'}
-</div>`;
-  }
-
-  /* ============ النسخ ============ */
-  function backup() {
-    const size = (() => {
-      try { return (new Blob([JSON.stringify(state)]).size / 1024).toFixed(1); }
-      catch { return '—'; }
-    })();
-    return `
-<div class="c">
-  <h2>نسخة احتياطية</h2>
-  <p class="mu" style="font-size:13px">النسخة غير مشفرة. احفظها في مكان آمن.</p>
-  <p class="mu" style="font-size:13px">الحجم: <b>${size} ك.ب</b> — آخر تحديث: ${esc(state.updatedAt || '—')}</p>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-    <button type="button" class="p" data-action="download">تنزيل JSON</button>
-    <button type="button" class="d" data-action="reset">بدء خزنة جديدة</button>
-  </div>
-</div>
-
-<div class="c">
-  <h2>استعادة من ملف</h2>
-  <div class="backup-upload">
-    <input id="backupFile" type="file" accept=".json,application/json">
-    <p id="fileMeta" class="mu" style="font-size:13px;margin:0">لم يتم اختيار ملف</p>
-    <button type="button" class="p" data-action="restore">استعادة</button>
-  </div>
-  <p class="mu" style="font-size:13px;margin:8px 0 0">الاستعادة تستبدل البيانات الحالية بعد تأكيدك.</p>
-</div>`;
-  }
-
-  /* ============ عرض ============ */
-  function render() {
-    try {
-      ensureZakat();
-      drawTabs();
-      drawYearSelect();
-      const view = { overview, transactions, income, certificate, zakat, backup }[tab] || overview;
-      $('#app').innerHTML = view();
-    } catch (e) {
-      console.error(e);
-      $('#app').innerHTML = '<div class="error-box">تعذر عرض الصفحة. أعد التحميل أو استخدم النسخة الاحتياطية.</div>';
-    }
-  }
-
-  /* ============ Sheet ============ */
-  function openSheet(html) {
-    const sh = $('#sh');
-    if (!sh) return;
-    sh.innerHTML = `<div class="ov"><div class="bd" data-close-sheet></div><div class="sh" role="dialog" aria-modal="true">${html}</div></div>`;
-    document.body.style.overflow = 'hidden';
-    const input = sh.querySelector('input,select,textarea,button');
-    if (input) setTimeout(() => input.focus(), 50);
-  }
-  function closeSheet() {
-    const sh = $('#sh');
-    if (!sh) return;
-    sh.innerHTML = '';
-    document.body.style.overflow = '';
-  }
-
-  function quickSheet() {
-    openSheet(`
-      <h2>تسجيل سريع</h2>
-      <div class="il">
-        <button type="button" class="ir" data-quick="tx">
-          <s style="background:#277da1"></s>
-          <span><b>عملية جديدة</b><i>إيداع، شراء، مصروف…</i></span>
-        </button>
-        <button type="button" class="ir" data-quick="income">
-          <s style="background:#7fa35c"></s>
-          <span><b>دخل شهر</b><i>تسجيل دخل شهري</i></span>
-        </button>
-        <button type="button" class="ir" data-quick="cert">
-          <s style="background:#6c7fa0"></s>
-          <span><b>شهادة فيصل</b><i>تحديث أصل الشهادة</i></span>
-        </button>
-        <button type="button" class="ir" data-quick="backup">
-          <s style="background:#c99a2e"></s>
-          <span><b>نسخة احتياطية</b><i>تنزيل JSON</i></span>
-        </button>
-      </div>
-    `);
-  }
-
-  /* ============ التنزيل والاستعادة ============ */
-  function download() {
-    saveNow(true);
-    try {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `portfolio-backup-${stampISO()}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-      notify('تم تنزيل النسخة');
-    } catch (e) {
-      console.error(e);
-      notify('تعذر إنشاء الملف', 'error');
-    }
-  }
-
-  async function restore(file) {
-    if (!file) { notify('اختر ملفًا أولًا', 'error'); return; }
-    if (file.size > MAX_IMPORT_SIZE) { notify('الملف أكبر من 10 ميجابايت', 'error'); return; }
-    try {
-      const text = await file.text();
-      const next = normalize(JSON.parse(text));
-      if (!next.assets || !Array.isArray(next.transactions)) throw new Error('invalid');
-      if (!confirm('سيتم استبدال البيانات الحالية بالكامل. هل تريد المتابعة؟')) return;
-      state = next;
-      syncCertAsset();
-      ensureZakat();
-      if (!saveNow(true)) return;
-      tab = 'overview';
-      render();
-      notify('تمت الاستعادة بنجاح');
-    } catch (e) {
-      console.error(e);
-      notify('الملف غير صالح أو تالف', 'error');
-    }
-  }
-
-  /* ============ الأحداث ============ */
-  document.addEventListener('click', (e) => {
-    // إغلاق sheet
-    if (e.target.closest('[data-close-sheet]')) { closeSheet(); return; }
-
-    const b = e.target.closest('button');
-    if (!b) return;
-
-    if (b.dataset.tab) { tab = b.dataset.tab; render(); return; }
-    if (b.dataset.action === 'quick') { quickSheet(); return; }
-
-    // أزرار داخل quick sheet
-    if (b.dataset.quick) {
-      const q = b.dataset.quick;
-      closeSheet();
-      if (q === 'tx') { tab = 'transactions'; render(); setTimeout(() => $('input[name="note"]')?.focus(), 100); }
-      else if (q === 'income') { tab = 'income'; render(); setTimeout(() => $('input[name="income"]')?.focus(), 100); }
-      else if (q === 'cert') { tab = 'certificate'; render(); setTimeout(() => $('input[name="principal"]')?.focus(), 100); }
-      else if (q === 'backup') { tab = 'backup'; render(); }
-      return;
-    }
-
-    if (b.dataset.action === 'download') { download(); return; }
-    if (b.dataset.action === 'restore') { restore($('#backupFile')?.files?.[0]); return; }
-
-    if (b.dataset.action === 'reset') {
-      if (confirm('سيتم حذف كل البيانات المحلية. هل أنت متأكد؟')) {
-        state = seed();
-        saveNow(true);
-        render();
-        notify('تم بدء خزنة جديدة');
-      }
-      return;
-    }
-
-    if (b.dataset.action === 'zakat-sync') {
-      state.zakat.base = total();
-      save(); render();
-      notify('تمت مزامنة الأساس');
-      return;
-    }
-
-    if (b.dataset.deleteTx) {
-      const id = String(b.dataset.deleteTx);
-      if (!ID_REGEX.test(id)) return;
-      if (!confirm('حذف هذه العملية؟')) return;
-      state.transactions = state.transactions.filter((r) => r.id !== id);
-      save(); render(); return;
-    }
-
-    if (b.dataset.deleteIncome) {
-      const id = String(b.dataset.deleteIncome);
-      if (!ID_REGEX.test(id)) return;
-      if (!confirm('حذف سجل هذا الشهر؟')) return;
-      state.income = state.income.filter((r) => r.id !== id);
-      save(); render(); return;
-    }
-  });
-
-  /* ============ Escape لإغلاق sheet ============ */
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && $('#sh').innerHTML) closeSheet();
-  });
-
-  /* ============ تغيير السنة ============ */
-  document.addEventListener('change', (e) => {
-    if (e.target.id === 'yearSel') {
-      state.currentYear = clamp(+e.target.value, 1900, 2200);
-      save();
-      render();
-      return;
-    }
-    if (e.target.id === 'backupFile') {
-      const f = e.target.files[0];
-      const meta = $('#fileMeta');
-      if (meta) meta.textContent = f
-        ? `${f.name} — ${(f.size / 1024).toFixed(1)} ك.ب`
-        : 'لم يتم اختيار ملف';
-    }
-  });
-
-  /* ============ تعديل الأسعار جراحيًا ============ */
-  document.addEventListener('input', (e) => {
-    const k = e.target.dataset?.price;
-    if (!k) return;
-    const v = Math.max(0, num(e.target.value));
-    state.prices[k] = v;
-    save(true);
-    const gramEl = document.querySelector('[data-gram-price]');
-    if (gramEl) gramEl.textContent = n(goldPricePerGram() * num(state.prices.usd), 2);
-  });
-
-  /* ============ نماذج ============ */
-  document.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const f = e.target;
-    const el = (name) => f.elements?.[name];
-
-    if (f.id === 'txForm') {
-      const note = (el('note')?.value || '').trim();
-      const amount = num(el('amount')?.value);
-      if (!note) { notify('أدخل وصفًا', 'error'); el('note')?.focus(); return; }
-      if (amount < 0) { notify('المبلغ سالب', 'error'); return; }
-      const date = el('date')?.value || todayISO();
-      if (date > todayISO() && !confirm('التاريخ مستقبلي. المتابعة؟')) return;
-      state.transactions.push({
-        id: uid(), date, type: String(el('type')?.value || 'عملية'),
-        note: note.slice(0, 120), amount,
-        year: +date.slice(0, 4) || state.currentYear,
-      });
-      save(); render(); notify('تمت الإضافة');
-      return;
-    }
-
-    if (f.id === 'incomeForm') {
-      const date = el('date')?.value;
-      if (!date) { notify('اختر الشهر', 'error'); return; }
-      if (state.income.some((r) => r.date === date)
-          && !confirm('يوجد سجل لهذا الشهر. المتابعة؟')) return;
-      state.income.push({
-        id: uid(), date,
-        income: Math.max(0, num(el('income')?.value)),
-        transferredSar: Math.max(0, num(el('transferredSar')?.value)),
-        transferred: Math.max(0, num(el('transferred')?.value)),
-      });
-      save(); render(); notify('تم الحفظ');
-      return;
-    }
-
-    if (f.id === 'certForm') {
-      state.certificate.principal = Math.max(0, num(el('principal')?.value));
-      state.certificate.rates = [0, 1, 2, 3].map((i) =>
-        clamp(num(el('r' + i)?.value), 0, 100));
-      syncCertAsset();
-      save(); render(); notify('تم الحفظ');
-      return;
-    }
-
-    if (f.id === 'zakatForm') {
-      state.zakat.base = Math.max(0, num(el('base')?.value));
-      state.zakat.paid = Math.max(0, num(el('paid')?.value));
-      save(); render(); notify('تم الحفظ');
-      return;
-    }
-  });
-
-  /* ============ المظهر ============ */
-  function applyTheme(t) {
-    document.documentElement.dataset.theme = t;
-    try { localStorage.setItem(THEME_KEY, t); } catch {}
-    const btn = $('#tbtn');
-    if (btn) btn.textContent = t === 'dark' ? '☀' : '☾';
-  }
-  function initTheme() {
-    let t = 'light';
-    try {
-      t = localStorage.getItem(THEME_KEY)
-        || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    } catch {}
-    applyTheme(t);
-  }
-  const themeBtn = $('#tbtn');
-  if (themeBtn) themeBtn.addEventListener('click', () => {
-    const cur = document.documentElement.dataset.theme || 'light';
-    applyTheme(cur === 'dark' ? 'light' : 'dark');
-  });
-
-  /* ============ PWA install ============ */
-  const installBtn = $('#installBtn');
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (installBtn) installBtn.hidden = false;
-  });
-  if (installBtn) installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBtn.hidden = true;
-    if (outcome === 'accepted') notify('تم تثبيت التطبيق');
-  });
-  window.addEventListener('appinstalled', () => {
-    deferredPrompt = null;
-    if (installBtn) installBtn.hidden = true;
-  });
-
-  /* ============ بدء التشغيل ============ */
-  initTheme();
-  load();
-  ensureZakat(true);
-  render();
-
-  /* ============ حفظ احتياطي ============ */
-  window.addEventListener('beforeunload', () => {
-    clearTimeout(saveTimer);
-    try { saveNow(true); } catch {}
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      clearTimeout(saveTimer);
-      try { saveNow(true); } catch {}
-    }
-  });
-
-  /* ============ تسجيل SW ============ */
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch((e) => console.warn('SW:', e));
-    });
-  }
+  let saved='light';try{saved=localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light')}catch(e){saved=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}
+  apply(saved);
+  btn.onclick = () => apply(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
 })();
+
+
+boot();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+let deferredInstall;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;const b=document.querySelector('#installBtn');if(b)b.hidden=false});document.addEventListener('click',e=>{if(e.target.id==='installBtn'&&deferredInstall){deferredInstall.prompt();deferredInstall=null}});
