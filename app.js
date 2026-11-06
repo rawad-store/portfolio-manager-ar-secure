@@ -31,7 +31,7 @@ const u=S.usd,gp=S.oz/31.1034768*u,g=sum('Gold',4),goldV=g*gp,goldC=sum('Gold',5
 const cap=sum('Crypto',3)+inc.crypto/u,crV=S.man.cr*u;
 const dep=sum('Stocks',5)+inc.bors,fee=sum('Fee',5),th=sum('Tathir',5),pn=sum('Profit',5,x=>x[1]>=S.cut),inv=dep+fee+th;
 const app=S.man.sm+S.man.sc,prof=sum('Profit',5)-th-fee;const cv=certCalc().value;
-const fx={USD:u,QAR:u/3.65,SAR:u/3.75,EGP:1},cash=S.cash.reduce((a,c)=>a+c[2]*fx[c[1]],0)+inc.cash;
+const fx={USD:u,QAR:u/3.65,SAR:u/3.65,EGP:1},cash=S.cash.reduce((a,c)=>a+c[2]*fx[c[1]],0)+inc.cash;
 const re=sum('RealEstate',5)+inc.re,lib=S.man.lv,libC=sum('Library',5)+inc.lib;
 const rows=[['الذهب',goldV,.25,'#C99A2E'],['البورصة',app,.25,'#2F7F86'],['شهادة فيصل',cv,.15,'#6C7FA0'],['كريبتو',crV,.05,'#8A63A8'],['نقدية',cash,.18,'#7FA35C'],['عقار',re,.12,'#B5694A'],['مكتبة',lib,0,'#8C8C8C']];
 const total=rows.reduce((a,r)=>a+r[1],0),i26=['Stocks','Library','RealEstate','Gold'].reduce((a,y)=>a+sum(y,5,x=>x[1]>='2026-01-01'),0)+sum('Crypto',3,x=>x[1]>='2026-01-01')*u+i2;
