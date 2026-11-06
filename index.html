@@ -6,50 +6,145 @@
 <title>محفظتي الاحترافية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1D5C63">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <style>
-:root{--bg:#EDF0F1;--sf:#fff;--ink:#13212A;--mu:#5B6B75;--ln:#D3DADF;--au:#8A5F00;--up:#176652;--dn:#AE3526;--ac:#1D5C63;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;color-scheme:dark}}
-:root[data-theme=dark]{--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;color-scheme:dark}
+:root{--bg:#EDF0F1;--sf:#fff;--ink:#13212A;--mu:#5B6B75;--mu2:#8A99A0;--ln:#D3DADF;--au:#8A5F00;--up:#176652;--dn:#AE3526;--ac:#1D5C63;--ac-soft:rgba(29,92,99,.10);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--mu2:#5E7076;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;--ac-soft:rgba(111,195,203,.14);color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--mu2:#5E7076;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;--ac-soft:rgba(111,195,203,.14);color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*:before,*:after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'IBM Plex Sans Arabic',Tahoma,system-ui,sans-serif;font-variant-numeric:tabular-nums}
-.w{max-width:880px;margin:auto;padding:16px}
-header{display:flex;justify-content:space-between;align-items:baseline}
-h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 10px}
+.w{max-width:880px;margin:auto;padding:16px;padding-bottom:96px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+h1{font-size:20px;margin:0;display:flex;align-items:center;gap:6px}
+h1 .badge{font-size:11px;font-weight:500;background:var(--ac);color:var(--bg);padding:2px 7px;border-radius:10px}
+h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 #st{font-size:12px;color:var(--mu)}
-nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--ln);margin:10px 0 14px}
-nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:8px 12px;white-space:nowrap;color:var(--mu)}
+nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--ln);margin:10px 0 14px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:8px 12px;white-space:nowrap;color:var(--mu);font:inherit;cursor:pointer}
 nav button.on{border-color:var(--ac);color:var(--ink);font-weight:600}
-.hero{padding:6px 0 14px}.hero small{color:var(--mu)}
-.hero b{display:block;font-size:clamp(34px,9vw,56px);line-height:1.15;font-weight:600}
+.hero{padding:6px 0 14px;text-align:center}.hero small{color:var(--mu);display:block}
+.hero b{display:block;font-size:clamp(34px,9vw,56px);line-height:1.15;font-weight:700;letter-spacing:-.02em}
 .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:12px 0;background:var(--ln)}
+.bar i{transition:width .3s}
 .c{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px;margin:12px 0}
 .ks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:10px 0}
 .k{border-top:2px solid var(--ln);padding-top:8px}.k span,.k i{display:block;font-size:12px;color:var(--mu);font-style:normal}.k b{font-size:19px;font-weight:600}
 .tb{overflow-x:auto}table{width:100%;border-collapse:collapse}th{font-weight:400;color:var(--mu);text-align:start;font-size:12px}td,th{padding:6px 4px;border-bottom:1px solid var(--ln);white-space:nowrap}
+tr.tot td{font-weight:700;border-top:2px solid var(--ln)}
 s{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:6px;text-decoration:none}
-.ch{display:flex;gap:8px;align-items:flex-end;height:150px}.ch div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.ch b{width:100%;background:var(--ac);opacity:.85;border-radius:4px 4px 0 0}.ch span,.ch em{font-size:11px;color:var(--mu);font-style:normal}
-input,select,textarea{font:inherit;font-size:16px;color:inherit;background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:6px 8px;width:100%}
+.ch{display:flex;gap:8px;align-items:flex-end;height:150px}.ch div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.ch b{width:100%;background:var(--ac);opacity:.85;border-radius:4px 4px 0 0;transition:height .4s}.ch span,.ch em{font-size:11px;color:var(--mu);font-style:normal;text-align:center;line-height:1.2}
+input,select,textarea{font:inherit;font-size:16px;color:inherit;background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:6px 8px;width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
 label{display:grid;gap:2px;font-size:13px;color:var(--mu)}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:10px}
-button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:6px;padding:6px 12px}button.p{background:var(--ac);color:var(--bg);border-color:var(--ac)}button:hover{filter:brightness(.96)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 35%,transparent);outline-offset:2px}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:5}.bd{position:absolute;inset:0}
-.sh{position:relative;background:var(--sf);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chips button.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
-#fab{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));inset-inline-start:18px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:var(--bg);border:0;font-size:30px;line-height:1;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:4}
-.w{padding-bottom:96px}.lock-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}.lock-card{width:min(100%,440px);background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:24px;box-shadow:0 10px 35px rgba(0,0,0,.15)}.lock-card h2{font-size:22px;margin:0 0 6px}.lock-card p{color:var(--mu);margin:6px 0 16px}.lock-card .err{color:var(--dn);min-height:24px;font-size:13px}.secure-note{font-size:12px;color:var(--mu)}.chart{width:100%;height:auto;display:block}.chart text{fill:var(--mu);font:11px sans-serif}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mu)}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:4px}.filter-total{border-top:2px solid var(--ac);padding-top:10px;margin-top:10px}.year-badge{font-size:12px;color:var(--mu)}@media(max-width:560px){header{align-items:flex-start;gap:8px}header h1{white-space:nowrap}#st{display:none}}.il{display:grid;gap:8px}.ir{display:flex;align-items:center;gap:10px;text-align:start;padding:12px;width:100%}.ir span{display:flex;flex-direction:column}.ir span+span{margin-inline-start:auto;text-align:end}.ir i{font-style:normal;font-size:12px;color:var(--mu)}.ir s{width:6px;height:36px;border-radius:3px;margin:0}
-.up{color:var(--up)}.dn{color:var(--dn)}.au{color:var(--au)}.mu{color:var(--mu)}.sc{max-height:55vh;overflow:auto}
+button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:6px;padding:6px 12px;transition:all .15s}
+button:hover{filter:brightness(.96)}
+button.p{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+button.danger{color:var(--dn);border-color:var(--dn)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 35%,transparent);outline-offset:2px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.bd{position:absolute;inset:0}
+.sh{position:relative;background:var(--sf);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{padding:5px 12px;border-radius:20px;font-size:13px;border-color:var(--ln)}
+.chips button.on{background:var(--ac);color:var(--bg);border-color:var(--ac);font-weight:600}
+#fab{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));inset-inline-start:18px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:var(--bg);border:0;font-size:30px;line-height:1;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:10;cursor:pointer}
+.il{display:grid;gap:8px}
+.ir{display:flex;align-items:center;gap:10px;text-align:start;padding:12px;width:100%;background:var(--sf);border:1px solid var(--ln);border-radius:10px}
+.ir span{display:flex;flex-direction:column}.ir span+span{margin-inline-start:auto;text-align:end}
+.ir i{font-style:normal;font-size:12px;color:var(--mu)}.ir b{font-weight:600}
+.ir s{width:6px;height:36px;border-radius:3px;margin:0;flex-shrink:0}
+.up{color:var(--up)}.dn{color:var(--dn)}.au{color:var(--au)}.mu{color:var(--mu)}.m2{color:var(--mu2)}
+.sc{max-height:55vh;overflow:auto}
+svg.chart{width:100%;height:auto;display:block}svg.chart text{fill:var(--mu);font:11px sans-serif}
+svg.spark{display:block}
+.lock-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.lock-screen[hidden]{display:none}
+.lock-card{width:min(100%,440px);background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:24px;box-shadow:0 10px 35px rgba(0,0,0,.15)}
+.lock-card h2{font-size:22px;margin:0 0 6px}
+.lock-card p{color:var(--mu);margin:6px 0 16px}
+.lock-card .err{color:var(--dn);min-height:24px;font-size:13px}
+.secure-note{font-size:12px;color:var(--mu);margin-top:12px}
+.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:10px}
+.alert.ok{background:rgba(23,102,82,.10);color:var(--up)}
+.alert.err{background:rgba(174,53,38,.10);color:var(--dn)}
+.alert.warn{background:rgba(138,95,0,.10);color:var(--au)}
+@media(max-width:560px){header{gap:6px}header h1{font-size:18px}#st{display:none}.ks{grid-template-columns:1fr 1fr}}
+@media print{nav,#fab,header button,.lock-screen{display:none!important}.w{padding:0}header{display:none}}
 </style>
 </head>
 <body>
-<div id="lockScreen" class="lock-screen" hidden><div class="lock-card"><h2 id="lockTitle">محفظتي محمية</h2><p id="lockText">أدخل كلمة المرور لفك تشفير بياناتك المحلية.</p><form id="lockForm"><label>كلمة المرور<input id="lockPassword" type="password" minlength="8" autocomplete="current-password" required autofocus></label><label id="lockConfirmWrap" hidden>تأكيد كلمة المرور<input id="lockConfirm" type="password" minlength="8" autocomplete="new-password"></label><p class="err" id="lockError"></p><button class="p" id="lockSubmit" type="submit">فتح التطبيق</button></form><div id="restoreWrap" hidden><label>استعادة نسخة مشفرة<input id="restoreFile" type="file" accept=".json,.vault.json,application/json"></label><button id="restoreSecureBtn" type="button">استعادة النسخة قبل إنشاء الخزنة</button></div><p class="secure-note">تُشفّر البيانات على هذا الجهاز باستخدام AES-GCM. لا يتم حفظ كلمة المرور نفسها.</p></div></div><div id="pwModal" class="lock-screen" hidden><div class="lock-card"><h2>تغيير كلمة المرور</h2><p>أدخل كلمة المرور الجديدة وأكدها. لن تظهر الأحرف على الشاشة.</p><form id="pwForm"><label>كلمة المرور الجديدة<input id="newPassword" type="password" minlength="8" autocomplete="new-password" required></label><label>تأكيد كلمة المرور<input id="newPasswordConfirm" type="password" minlength="8" autocomplete="new-password" required></label><p class="err" id="pwError"></p><button class="p" type="submit">حفظ كلمة المرور</button> <button type="button" id="pwCancel">إلغاء</button></form></div></div>
-<div class="w"><header><h1>محفظتي <span style="font-size:11px;font-weight:500;background:var(--ac);color:var(--bg);padding:2px 7px;border-radius:10px;vertical-align:middle">احترافي</span></h1><div style="display:flex;align-items:center;gap:8px"><label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu)">السنة<select id="yearSel" style="width:auto;min-width:92px;padding:4px 7px;font-size:14px"></select></label><span id="st"></span><button id="lockBtn" type="button" title="قفل التطبيق">قفل</button><button id="installBtn" hidden title="تثبيت التطبيق">تثبيت</button>
-<button id="tbtn" title="تبديل الوضع" style="border:1px solid var(--ln);background:var(--sf);border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;margin-inline-start:8px;display:inline-flex;align-items:center;justify-content:center">☾</button>
-</header><div id="app"></div></div>
-<div id="sh"></div><button id="fab" data-a="qo" aria-label="تسجيل سريع">+</button>
+
+<!-- Lock screen -->
+<div id="lockScreen" class="lock-screen" hidden>
+  <div class="lock-card">
+    <h2 id="lockTitle">محفظتي محمية</h2>
+    <p id="lockText">أدخل كلمة المرور لفك تشفير بياناتك المحلية.</p>
+    <form id="lockForm">
+      <label>كلمة المرور
+        <input id="lockPassword" type="password" minlength="8" autocomplete="current-password" required autofocus>
+      </label>
+      <label id="lockConfirmWrap" hidden>تأكيد كلمة المرور
+        <input id="lockConfirm" type="password" minlength="8" autocomplete="new-password">
+      </label>
+      <p class="err" id="lockError"></p>
+      <button class="p" id="lockSubmit" type="submit">فتح التطبيق</button>
+    </form>
+    <div id="restoreWrap" hidden style="margin-top:14px">
+      <label>استعادة نسخة مشفرة (اختياري)
+        <input id="restoreFile" type="file" accept=".json,.vault.json,application/json">
+      </label>
+      <button id="restoreSecureBtn" type="button" style="margin-top:8px">استعادة النسخة قبل إنشاء الخزنة</button>
+    </div>
+    <p class="secure-note">تُشفّر البيانات على هذا الجهاز باستخدام AES-GCM. لا يتم حفظ كلمة المرور نفسها. نسيانها يعني عدم إمكانية استعادة البيانات.</p>
+  </div>
+</div>
+
+<!-- Change password modal -->
+<div id="pwModal" class="lock-screen" hidden>
+  <div class="lock-card">
+    <h2>تغيير كلمة المرور</h2>
+    <p>أدخل كلمة المرور الجديدة وأكدها. لن تظهر الأحرف على الشاشة.</p>
+    <form id="pwForm">
+      <label>كلمة المرور الجديدة
+        <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required>
+      </label>
+      <label>تأكيد كلمة المرور
+        <input id="newPasswordConfirm" type="password" minlength="8" autocomplete="new-password" required>
+      </label>
+      <p class="err" id="pwError"></p>
+      <button class="p" type="submit">حفظ كلمة المرور</button>
+      <button type="button" id="pwCancel">إلغاء</button>
+    </form>
+  </div>
+</div>
+
+<div class="w">
+  <header>
+    <h1>محفظتي <span class="badge">احترافي</span></h1>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu)">
+        السنة<select id="yearSel" style="width:auto;min-width:92px;padding:4px 7px;font-size:14px"></select>
+      </label>
+      <span id="st"></span>
+      <button id="lockBtn" type="button" title="قفل التطبيق">قفل</button>
+      <button id="installBtn" hidden title="تثبيت التطبيق">تثبيت</button>
+      <button id="tbtn" title="تبديل الوضع" style="border:1px solid var(--ln);background:var(--sf);border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center">☾</button>
+    </div>
+  </header>
+  <div id="app"></div>
+</div>
+
+<div id="sh"></div>
+<button id="fab" data-a="qo" aria-label="تسجيل سريع">＋</button>
+
 <script src="app.js" defer></script>
 </body>
 </html>
