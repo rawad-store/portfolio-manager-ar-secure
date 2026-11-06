@@ -6,145 +6,205 @@
 <title>محفظتي الاحترافية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1D5C63">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
 <style>
-:root{--bg:#EDF0F1;--sf:#fff;--ink:#13212A;--mu:#5B6B75;--mu2:#8A99A0;--ln:#D3DADF;--au:#8A5F00;--up:#176652;--dn:#AE3526;--ac:#1D5C63;--ac-soft:rgba(29,92,99,.10);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--mu2:#5E7076;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;--ac-soft:rgba(111,195,203,.14);color-scheme:dark}}
-:root[data-theme=dark]{--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--mu2:#5E7076;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;--ac-soft:rgba(111,195,203,.14);color-scheme:dark}
+:root{--bg:#EDF0F1;--sf:#fff;--ink:#13212A;--mu:#5B6B75;--ln:#D3DADF;--au:#8A5F00;--up:#176652;--dn:#AE3526;--ac:#1D5C63;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0E1517;--sf:#162023;--ink:#E7EEEC;--mu:#8FA2A8;--ln:#27373C;--au:#E0B84F;--up:#52C4A7;--dn:#EA8573;--ac:#6FC3CB;color-scheme:dark}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*:before,*:after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 'IBM Plex Sans Arabic',Tahoma,system-ui,sans-serif;font-variant-numeric:tabular-nums}
-.w{max-width:880px;margin:auto;padding:16px;padding-bottom:96px}
-header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-h1{font-size:20px;margin:0;display:flex;align-items:center;gap:6px}
-h1 .badge{font-size:11px;font-weight:500;background:var(--ac);color:var(--bg);padding:2px 7px;border-radius:10px}
-h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.w{max-width:880px;margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:baseline}
+h1{font-size:20px;margin:0}h2{font-size:15px;margin:0 0 10px}
 #st{font-size:12px;color:var(--mu)}
-nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--ln);margin:10px 0 14px;scrollbar-width:none}
-nav::-webkit-scrollbar{display:none}
-nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:8px 12px;white-space:nowrap;color:var(--mu);font:inherit;cursor:pointer}
+nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--ln);margin:10px 0 14px}
+nav button{border:0;border-bottom:3px solid transparent;border-radius:0;background:none;padding:8px 12px;white-space:nowrap;color:var(--mu)}
 nav button.on{border-color:var(--ac);color:var(--ink);font-weight:600}
-.hero{padding:6px 0 14px;text-align:center}.hero small{color:var(--mu);display:block}
-.hero b{display:block;font-size:clamp(34px,9vw,56px);line-height:1.15;font-weight:700;letter-spacing:-.02em}
+.hero{padding:6px 0 14px}.hero small{color:var(--mu)}
+.hero b{display:block;font-size:clamp(34px,9vw,56px);line-height:1.15;font-weight:600}
 .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:12px 0;background:var(--ln)}
-.bar i{transition:width .3s}
 .c{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px;margin:12px 0}
 .ks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:10px 0}
 .k{border-top:2px solid var(--ln);padding-top:8px}.k span,.k i{display:block;font-size:12px;color:var(--mu);font-style:normal}.k b{font-size:19px;font-weight:600}
 .tb{overflow-x:auto}table{width:100%;border-collapse:collapse}th{font-weight:400;color:var(--mu);text-align:start;font-size:12px}td,th{padding:6px 4px;border-bottom:1px solid var(--ln);white-space:nowrap}
-tr.tot td{font-weight:700;border-top:2px solid var(--ln)}
 s{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:6px;text-decoration:none}
-.ch{display:flex;gap:8px;align-items:flex-end;height:150px}.ch div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.ch b{width:100%;background:var(--ac);opacity:.85;border-radius:4px 4px 0 0;transition:height .4s}.ch span,.ch em{font-size:11px;color:var(--mu);font-style:normal;text-align:center;line-height:1.2}
-input,select,textarea{font:inherit;font-size:16px;color:inherit;background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:6px 8px;width:100%;transition:border-color .15s,box-shadow .15s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-soft)}
+.ch{display:flex;gap:8px;align-items:flex-end;height:150px}.ch div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}.ch b{width:100%;background:var(--ac);opacity:.85;border-radius:4px 4px 0 0}.ch span,.ch em{font-size:11px;color:var(--mu);font-style:normal}
+input,select,textarea{font:inherit;font-size:16px;color:inherit;background:var(--bg);border:1px solid var(--ln);border-radius:6px;padding:6px 8px;width:100%}
 label{display:grid;gap:2px;font-size:13px;color:var(--mu)}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:10px}
-button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:6px;padding:6px 12px;transition:all .15s}
-button:hover{filter:brightness(.96)}
-button.p{background:var(--ac);color:var(--bg);border-color:var(--ac)}
-button.danger{color:var(--dn);border-color:var(--dn)}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 35%,transparent);outline-offset:2px}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.bd{position:absolute;inset:0}
-.sh{position:relative;background:var(--sf);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.chips button{padding:5px 12px;border-radius:20px;font-size:13px;border-color:var(--ln)}
-.chips button.on{background:var(--ac);color:var(--bg);border-color:var(--ac);font-weight:600}
-#fab{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));inset-inline-start:18px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:var(--bg);border:0;font-size:30px;line-height:1;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:10;cursor:pointer}
-.il{display:grid;gap:8px}
-.ir{display:flex;align-items:center;gap:10px;text-align:start;padding:12px;width:100%;background:var(--sf);border:1px solid var(--ln);border-radius:10px}
-.ir span{display:flex;flex-direction:column}.ir span+span{margin-inline-start:auto;text-align:end}
-.ir i{font-style:normal;font-size:12px;color:var(--mu)}.ir b{font-weight:600}
-.ir s{width:6px;height:36px;border-radius:3px;margin:0;flex-shrink:0}
-.up{color:var(--up)}.dn{color:var(--dn)}.au{color:var(--au)}.mu{color:var(--mu)}.m2{color:var(--mu2)}
-.sc{max-height:55vh;overflow:auto}
-svg.chart{width:100%;height:auto;display:block}svg.chart text{fill:var(--mu);font:11px sans-serif}
-svg.spark{display:block}
-.lock-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;overflow:auto}
-.lock-screen[hidden]{display:none}
-.lock-card{width:min(100%,440px);background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:24px;box-shadow:0 10px 35px rgba(0,0,0,.15)}
-.lock-card h2{font-size:22px;margin:0 0 6px}
-.lock-card p{color:var(--mu);margin:6px 0 16px}
-.lock-card .err{color:var(--dn);min-height:24px;font-size:13px}
-.secure-note{font-size:12px;color:var(--mu);margin-top:12px}
-.alert{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:10px}
-.alert.ok{background:rgba(23,102,82,.10);color:var(--up)}
-.alert.err{background:rgba(174,53,38,.10);color:var(--dn)}
-.alert.warn{background:rgba(138,95,0,.10);color:var(--au)}
-@media(max-width:560px){header{gap:6px}header h1{font-size:18px}#st{display:none}.ks{grid-template-columns:1fr 1fr}}
-@media print{nav,#fab,header button,.lock-screen{display:none!important}.w{padding:0}header{display:none}}
+button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--sf);color:var(--ink);border-radius:6px;padding:6px 12px}button.p{background:var(--ac);color:var(--bg);border-color:var(--ac)}button:hover{filter:brightness(.96)}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--ac) 35%,transparent);outline-offset:2px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:5}.bd{position:absolute;inset:0}
+.sh{position:relative;background:var(--sf);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow:auto}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chips button.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+#fab{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));inset-inline-start:18px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:var(--bg);border:0;font-size:30px;line-height:1;padding:0;box-shadow:0 4px 14px rgba(0,0,0,.3);z-index:4}
+.w{padding-bottom:96px}.chart{width:100%;height:auto;display:block}.chart text{fill:var(--mu);font:11px sans-serif}.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mu)}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-inline-end:4px}.filter-total{border-top:2px solid var(--ac);padding-top:10px;margin-top:10px}.year-badge{font-size:12px;color:var(--mu)}@media(max-width:560px){header{align-items:flex-start;gap:8px}header h1{white-space:nowrap}#st{display:none}}.il{display:grid;gap:8px}.ir{display:flex;align-items:center;gap:10px;text-align:start;padding:12px;width:100%}.ir span{display:flex;flex-direction:column}.ir span+span{margin-inline-start:auto;text-align:end}.ir i{font-style:normal;font-size:12px;color:var(--mu)}.ir s{width:6px;height:36px;border-radius:3px;margin:0}
+.up{color:var(--up)}.dn{color:var(--dn)}.au{color:var(--au)}.mu{color:var(--mu)}.sc{max-height:55vh;overflow:auto}
 </style>
 </head>
 <body>
+<div class="w"><header><h1>محفظتي <span style="font-size:11px;font-weight:500;background:var(--ac);color:var(--bg);padding:2px 7px;border-radius:10px;vertical-align:middle">احترافي</span></h1><div style="display:flex;align-items:center;gap:8px"><label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu)">السنة<select id="yearSel" style="width:auto;min-width:92px;padding:4px 7px;font-size:14px"></select></label><span id="st"></span><button id="installBtn" hidden title="تثبيت التطبيق">تثبيت</button>
+<button id="tbtn" title="تبديل الوضع" style="border:1px solid var(--ln);background:var(--sf);border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;margin-inline-start:8px;display:inline-flex;align-items:center;justify-content:center">☾</button>
+</header><div id="app"></div></div>
+<div id="sh"></div><button id="fab" data-a="qo" aria-label="تسجيل سريع">+</button>
+<script>
+const SEED={"usd":56,"oz":3880,"cut":"2026-10-19","due":"2027-01-11","tx":[["Crypto","2023-12-10","بدء الاستثمار",174.8,0,0],["Crypto","2023-12-20","من مصر",11,0,0],["Crypto","2023-12-20","إيداع",101.18,0,0],["Crypto","2023-12-22","إيداع",100,0,0],["Crypto","2023-12-24","إيداع",160,0,0],["Crypto","2023-12-26","إيداع",302.63,0,0],["Crypto","2024-01-04","إيداع",78.12,0,0],["Crypto","2024-02-07","إيداع",1021,0,0],["Crypto","2024-02-07","مصاريف اينستاباي",-100,0,0],["Crypto","2024-02-14","سحب زكاة",-175,0,0],["Crypto","2024-02-22","إيداع",79.48,0,0],["Crypto","2024-03-02","إيداع",1049.86,0,0],["Crypto","2024-04-03","إيداع",526.31,0,0],["Crypto","2024-04-06","إيداع",104.96,0,0],["Crypto","2024-04-13","إيداع",205.12,0,0],["Crypto","2024-07-01","إيداع",100.59,0,0],["Crypto","2024-08-01","إيداع",100.96,0,0],["Crypto","2024-08-08","إيداع",55.69,0,0],["Crypto","2024-08-31","إيداع",100.78,0,0],["Crypto","2024-09-05","إيداع",20.28,0,0],["Crypto","2024-10-06","إيداع",61.55,0,0],["Crypto","2024-11-03","إيداع",100.34,0,0],["Crypto","2025-02-03","إيداع",100.05,0,5185],["Crypto","2025-08-05","إيداع",113,0,5520],["Crypto","2025-11-27","إيداع",103.56,0,5000],["Gold","2024-02-14","من بدء الاستثمار",0,84,140000],["Gold","2023-08-02","سبيكتين 5+10",0,15,37750],["Gold","2023-11-15","سبيكة",0,10,31600],["Gold","2024-05-03","سبيكة",0,10,35800],["Gold","2024-07-01","سبيكة",0,10,36900],["Gold","2024-10-02","سبيكة",0,10,41650],["Gold","2024-09-03","جنيه",0,7,27700],["Stocks","2025-05-08","بدء الاستثمار",0,0,3000],["Stocks","2025-05-11","إيداع",0,0,2000],["Stocks","2025-05-11","تجربة سحب أهلي",0,0,-1000],["Stocks","2025-05-11","إيداع",0,0,68000],["Stocks","2025-05-14","إيداع",0,0,60000],["Stocks","2025-05-25","إيداع",0,0,30000],["Stocks","2025-06-01","إيداع",0,0,15000],["Stocks","2025-06-16","إيداع ميرفت - تم الس",0,0,20000],["Stocks","2025-06-18","إيداع دينا - تم السد",0,0,30000],["Stocks","2025-07-02","إيداع",0,0,10000],["Stocks","2025-08-03","إيداع",0,0,25000],["Stocks","2025-09-03","إيداع",0,0,20000],["Stocks","2025-11-02","إيداع",0,0,30000],["Fee","2025-05-08","اشتراك جروب حلال",0,0,1000],["Fee","2026-06-06","تجديد",0,0,1000],["Profit","2025-10-27","توزيعات ابو قير",0,0,4240.39],["Profit","2025-10-16","توزيعات اموك",0,0,728.02],["Profit","2025-07-29","إغلاق اوراسكوم",0,0,13932.97],["Profit","2025-07-29","إغلاق اوراسكوم",0,0,8725.4],["Profit","2025-06-23","إغلاق عبور لاند",0,0,3614],["Profit","2025-08-21","إغلاق كفر الزيات",0,0,205.06],["Profit","2025-08-21","إغلاق كفر الزيات",0,0,0.89],["Profit","2025-07-21","إغلاق مصر ألومنيوم",0,0,1037.58],["Profit","2025-10-16","توزيعات مصر ألومنيوم",0,0,2737.44],["Profit","2025-10-22","إغلاق مصر ألومنيوم",0,0,4986.72],["Profit","2025-10-29","إغلاق مصر ألومنيوم",0,0,6052.57],["Profit","2025-12-08","إغلاق عبور لاند",0,0,3280.21],["Profit","2026-01-05","توزيعات ابو قير",0,0,3180.3],["Profit","2026-02-18","إغلاق ابو قير جزء",0,0,40488.53],["Profit","2026-02-18","إغلاق مدينة مصر",0,0,14035.12],["Profit","2026-02-23","توزيعات اموك",0,0,728.02],["Profit","2026-02-26","توزيعات ابو قير نهائ",0,0,5300.49],["Profit","2026-04-23","توزيعات اموك",0,0,3063.37],["Profit","2026-04-26","إغلاق اوراسكوم",0,0,12484.53],["Profit","2026-05-20","توزيعات النساجون",0,0,1312.95],["Profit","2026-06-07","توزيعات السويدي",0,0,2266.33],["Profit","2026-07-29","توزيعات ممفيس",0,0,19790],["Library","2025-02-02","رصيد زكاة 2025",0,0,25000],["Library","2025-03-02","بضاعة",0,0,10000],["Library","2025-07-02","بضاعة",0,0,26000],["Library","2025-07-10","بضاعة",0,0,8000],["Library","2025-08-03","بضاعة",0,0,15000],["RealEstate","2026-09-10","دفعة 5% حصة بمنصة فر",0,0,10000],["Tathir","2026-09-01","إجمالي التطهير التار",0,0,25918.58],["Stocks","2026-09-13","إيداع",0,0,51000],["Profit","2026-10-19","ارباح توزيعات اموك",0,0,3063.37],["Profit","2026-10-19","ارباح توزيعات مصر لص",0,0,3055.53],["Tathir","2026-10-19","تطهير اموك ومصر للكي",0,0,500],["Profit","2026-10-28","ارباح توزيعات النساج",0,0,1312.95],["Tathir","2026-10-28","تطهير النساجون",0,0,50],["Gold","2026-11-01","خاتم امي عيار 21 وزن",0,2.2925,0]],"man":{"cr":375,"cd":"2026-11-01","sm":783547.71,"sc":80.01,"cb":539513.4,"lv":65000},"cash":[["دولار ورقي فيصل","USD",460],["دولار كاش","USD",400],["ريال قطري","QAR",250],["ريال سعودي","SAR",445],["نقدي أهلي","EGP",7000],["نقدي فيصل","EGP",1000],["نقدي مصري","EGP",1610]],"cert":{"p":149000,"c":307298.173667014,"r":[0.047,0.046,0.046,0]},"q":[["2024-Q1",1058233.62],["2025-Q1",1249818.87],["2025-Q4",1999911.32],["2026-Q1",2175214.55155608],["2026-Q2",2128435.89312284],["2026-Q3",2320791.30974242]],"zk":{"paid":0,"h":[["2024-1445",1058233.62,26455.84],["2025-1446",1249818.87,31245.47],["2026-1447",1999911.32,49997.78]]},"im":[{"d":"2025-02-01","q":806,"tq":0,"te":0,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-03-01","q":5000,"tq":4125,"te":56785,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-04-01","q":5000,"tq":4362,"te":60000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-05-01","q":5000,"tq":4377,"te":60000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-06-01","q":5000,"tq":4024,"te":54611,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-07-01","q":5000,"tq":4455,"te":60000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-08-01","q":5000,"tq":4234,"te":56000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-09-01","q":5000,"tq":4024,"te":53050,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-10-01","q":5000,"tq":4425,"te":57652,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-11-01","q":5000,"tq":4024,"te":51780,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2025-12-01","q":5000,"tq":4024,"te":52180,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-01-01","q":5000,"tq":4024,"te":52369,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-02-01","q":5000,"tq":4124,"te":52741,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-03-01","q":5000,"tq":3710,"te":51000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-04-01","q":5000,"tq":3710,"te":53000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-05-01","q":5000,"tq":3500,"te":0,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-06-01","q":18006,"tq":2051,"te":80000,"a":{"Stocks":0,"Gold":0,"Crypto":0,"Library":0,"RealEstate":0,"Cash":0}},{"d":"2026-10-01","q":4166,"tq":3041,"te":43000,"a":{"Stocks":25000,"Gold":0,"Crypto":0,"Library":0,"RealEstate":10000,"Cash":0}},{"d":"2026-11-01","q":5000,"tq":3800,"te":58374.67,"a":{"Stocks":15000,"Gold":16015,"Crypto":0,"Library":0,"RealEstate":2000,"Cash":0}}],"re":{"up":20000,"mo":1950,"n":84,"start":"2026-11-01","x":[["صيانة (4 × 4,160)",16640,0],["تشطيب (4 × 6,500)",26000,0],["ضريبة VAT",2080,0]]},"plan":{"Stocks":50,"Gold":20,"Crypto":0,"Library":0,"Cash":30}};
+let S=JSON.parse(JSON.stringify(SEED)),tab='ov',flt='',fltYear='',DB=null;const K='wlt1';
+try{const s=localStorage.getItem(K);if(s)S=JSON.parse(s)}catch(e){}mig();
+const $=s=>document.querySelector(s),E=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])),num=x=>Number.isFinite(Number(x))?Number(x):0,N=(x,d=0)=>num(x).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d}),P=(x,f='—')=>Number.isFinite(Number(x))?(Number(x)*100).toFixed(1)+'%':f,sg=x=>(num(x)>0?'+':'')+N(x),cl=x=>num(x)>0?'up':num(x)<0?'dn':'mu';
+const TY={Crypto:'كريبتو',Gold:'ذهب',Stocks:'بورصة',Fee:'رسوم',Tathir:'تطهير',Profit:'أرباح',Library:'مكتبة',RealEstate:'عقار'};
+function st(t){const e=$('#st');if(e)e.textContent=t}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}
+if(DB)DB.set({j:JSON.stringify(S),t:Date.now()}).then(()=>st('تم الحفظ والمزامنة'),()=>st('حُفظ على الجهاز فقط'));else st('حُفظ على الجهاز')}
+function C(){const ia=(k,f='')=>S.im.reduce((a,m)=>m.d>=f?a+(m.a[k]||0):a,0),inc={bors:ia('Stocks'),gold:ia('Gold'),crypto:ia('Crypto'),lib:ia('Library'),re:ia('RealEstate'),cash:ia('Cash')},i2=['Stocks','Gold','Library','RealEstate','Cash','Crypto'].reduce((a,k)=>a+ia(k,'2026-01-01'),0),t=S.tx,sum=(ty,k,f)=>t.filter(x=>x[0]==ty&&(!f||f(x))).reduce((a,x)=>a+(x[k]||0),0);
+const u=S.usd,gp=S.oz/31.1034768*u,g=sum('Gold',4),goldV=g*gp,goldC=sum('Gold',5)+inc.gold;
+const cap=sum('Crypto',3)+inc.crypto/u,crV=S.man.cr*u;
+const dep=sum('Stocks',5)+inc.bors,fee=sum('Fee',5),th=sum('Tathir',5),pn=sum('Profit',5,x=>x[1]>=S.cut),inv=dep+fee+th;
+const app=S.man.sm+S.man.sc,prof=sum('Profit',5)-th-fee;let cv=S.cert.c;const certDates=['2026-03-31','2026-06-30','2026-09-30','2026-12-31'];S.cert.r.forEach((r,i)=>{if(certDates[i]&&certDates[i]<=td())cv*=1+r});
+const fx={USD:u,QAR:u/3.65,SAR:u/3.65,EGP:1},cash=S.cash.reduce((a,c)=>a+c[2]*fx[c[1]],0)+inc.cash;
+const re=sum('RealEstate',5)+inc.re,lib=S.man.lv,libC=sum('Library',5)+inc.lib;
+const rows=[['الذهب',goldV,.25,'#C99A2E'],['البورصة',app,.25,'#2F7F86'],['شهادة فيصل',cv,.15,'#6C7FA0'],['كريبتو',crV,.05,'#8A63A8'],['نقدية',cash,.18,'#7FA35C'],['عقار',re,.12,'#B5694A'],['مكتبة',lib,0,'#8C8C8C']];
+const total=rows.reduce((a,r)=>a+r[1],0),i26=['Stocks','Library','RealEstate','Gold'].reduce((a,y)=>a+sum(y,5,x=>x[1]>='2026-01-01'),0)+sum('Crypto',3,x=>x[1]>='2026-01-01')*u+i2;
+return{inc,liab:Math.max(0,RT()-re),rn:Math.ceil(Math.max(0,S.re.mo*S.re.n-Math.max(0,re-S.re.up-S.re.x.reduce((s,x)=>s+x[2],0)))/S.re.mo),u,gp,g,goldV,goldC,cap,crV,dep,fee,th,pn,inv,app,prof,cv,cash,re,lib,libC,rows,total,i26,days:Math.ceil((new Date(S.due+'T00:00:00')-new Date(td()+'T00:00:00'))/864e5)}}
+const inp=(p,v,t='number')=>`<input data-p="${E(p)}" type="${E(t)}" step="any" inputmode="${t=='number'?'decimal':'text'}" value="${E(v)}">`;
+const fl=(l,p,v,t)=>`<label>${l}${inp(p,v,t)}</label>`,kp=(l,v,s,c='')=>`<div class="k"><span>${l}</span><b class="${c}">${v}</b><i>${s||''}</i></div>`;
+function vOv(c){const base=S.q.find(x=>x[0]=='2025-Q4')[1],net=c.total-base-c.i26,qs=[...S.q,['الآن',c.total]],mx=Math.max(...qs.map(x=>x[1]));
+const zk=Math.max(0,c.total*.025-S.zk.paid),zc=c.days<=30?'dn':c.days<=60?'au':'up',gg=c.goldV-c.goldC,sg2=c.app-c.inv;
+return`<div class="hero"><small>إجمالي الثروة (ج.م)</small><b>${N(c.total)}</b><small>≈ $${N(c.total/c.u)} · منذ نهاية 2025: <span class="${cl(c.total-base)}">${sg(c.total-base)}</span> (منها ضخّ جديد ${N(c.i26)}، والأداء الفعلي <span class="${cl(net)}">${sg(net)} / ${P(net/base)}</span>)</small></div>
+<div class="bar">${c.rows.map(r=>`<i style="width:${r[1]/c.total*100}%;background:${r[3]}"></i>`).join('')}</div>
+<div class="ks">${kp('ربح الذهب غير المحقق',sg(gg),P(c.goldC?gg/c.goldC:0)+' على التكلفة',cl(gg))}${kp('ربح البورصة الكلي',sg(sg2),'غير المحقق '+sg(S.man.sm-S.man.cb),cl(sg2))}${kp('أرباح محققة صافية',N(c.prof),'بعد التطهير والرسوم','up')}${kp('كريبتو',P(c.cap?S.man.cr/c.cap-1:0),N(S.man.cr)+' من '+N(c.cap)+' USDT',cl(S.man.cr-c.cap))}${kp('الزكاة المتبقية',N(zk),'باقٍ '+c.days+' يوم',zc)}${kp('التزام العقار',N(c.liab),c.rn+' قسط متبقٍ','au')}</div>
+<section class="c"><h2>التوزيع مقابل الهدف</h2><div class="tb"><table><tr><th>الأصل</th><th>القيمة</th><th>الحالي</th><th>الهدف</th><th>الفرق (نقطة)</th></tr>${c.rows.map(r=>{const p=r[1]/c.total,d=p-r[2];return`<tr data-st="${KS[c.rows.indexOf(r)]}" style="cursor:pointer"><td><s style="background:${r[3]}"></s>${E(r[0])} ›</td><td>${N(r[1])}</td><td>${P(p)}</td><td>${r[2]?P(r[2]):'—'}</td><td class="${d>.02?'au':'mu'}">${sg(d*100)}</td></tr>`}).join('')}</table></div></section>
+<section class="c"><h2>الأرصدة الربعية (ألف ج.م)</h2><div class="ch">${qs.map(x=>`<div><em>${N(x[1]/1e3)}</em><b style="height:${x[1]/mx*100}%"></b><span>${x[0]}</span></div>`).join('')}</div></section>`}
+function vPf(c){const m=S.man,gg=c.goldV-c.goldC;return`<section class="c"><h2>الأسعار</h2><div class="g">${fl('دولار / جنيه','usd',S.usd)}${fl('أونصة الذهب ($)','oz',S.oz)}</div><span class="mu">سعر جرام 24: ${N(c.gp)} ج.م</span></section>
+<section class="c"><h2>الذهب</h2><div class="ks">${kp('الوزن (24)',N(c.g,3)+' جم')}${kp('القيمة',N(c.goldV))}${kp('التكلفة',N(c.goldC))}${kp('الربح',sg(gg),P(c.goldC?gg/c.goldC:0),cl(gg))}</div></section>
+<section class="c"><h2>البورصة</h2><div class="g">${fl('القيمة السوقية للأسهم','man.sm',m.sm)}${fl('كاش داخل التطبيق','man.sc',m.sc)}${fl('تكلفة الأسهم (Cost Basis)','man.cb',m.cb)}</div><div class="ks">${kp('رأس المال المستثمر',N(c.inv),'إيداع '+N(c.dep)+' + رسوم '+N(c.fee)+' + تطهير '+N(c.th))}${kp('الربح الكلي',sg(c.app-c.inv),P(c.inv?(c.app-c.inv)/c.inv:0),cl(c.app-c.inv))}${kp('غير المحقق',sg(m.sm-m.cb),P(m.cb?(m.sm-m.cb)/m.cb:0),cl(m.sm-m.cb))}</div></section>
+<section class="c"><h2>كريبتو</h2><div class="g">${fl('الرصيد (USDT)','man.cr',m.cr)}${fl('تاريخ التحديث','man.cd',m.cd,'date')}</div><span class="mu">رأس المال ${N(c.cap,2)} USDT · القيمة ${N(c.crV)} ج.م</span></section>
+<section class="c"><h2>مكتبة وعقار وشهادة</h2><div class="g">${fl('قيمة المكتبة الحالية','man.lv',m.lv)}</div><div class="ks">${kp('المكتبة',sg(c.lib-c.libC),'تكلفة '+N(c.libC),cl(c.lib-c.libC))}${kp('العقار (بالتكلفة)',N(c.re))}${kp('شهادة فيصل',N(c.cv),'الأصل '+N(S.cert.p)+' · أرباح '+N(c.cv-S.cert.p))}</div></section>
+<section class="c"><h2>النقدية</h2><div class="g">${S.cash.map((x,i)=>fl(x[0]+' ('+x[1]+')','cash.'+i+'.2',x[2])).join('')}</div></section><section class="c"><h2>شهادة فيصل — الأرباع المالية</h2><div class="g">${fl('أصل الشهادة','cert.p',S.cert.p)}</div><div class="tb"><table><tr><th>الربع</th><th>تاريخ الاستحقاق</th><th>نسبة الربح</th><th>الربح</th><th>الرصيد التراكمي</th></tr>${S.cert.r.map((r,i)=>{const ds=['2026-03-31','2026-06-30','2026-09-30','2026-12-31'][i]||'';const earned=ds&&ds<=td(),profit=earned?S.cert.c*r:0;return`<tr><td>Q${i+1}</td><td>${ds}</td><td>${fl('',`cert.r.${i}`,r)}</td><td>${N(profit)}</td><td>${N(S.cert.c+S.cert.r.slice(0,i+1).reduce((a,v,j)=>a+((['2026-03-31','2026-06-30','2026-09-30','2026-12-31'][j]<=td())?S.cert.c*v:0),0))}</td></tr>`}).join('')}</table></div><p class="mu">يمكن تعديل نسبة كل ربع، وسيُرحّل الربح المستحق تلقائيًا إلى الرصيد التراكمي. الأرباع المستقبلية لا تُحتسب قبل تاريخ استحقاقها.</p></section>`}
+function vTx(c){const L=S.tx.map((x,i)=>[x,i]).filter(z=>(!flt||z[0][0]===flt)&&(!fltYear||String(z[0][1]).slice(0,4)===fltYear)).reverse(),allYears=[...new Set(S.tx.map(x=>String(x[1]).slice(0,4)))].sort().reverse(),tot=txTotals(L.map(z=>z[0])),dnow=td();return`<section class="c"><h2>إضافة عملية</h2><form id="tf" onsubmit="return false"><div class="g"><label>النوع<select name="ty">${Object.entries(TY).map(e=>`<option value="${e[0]}">${e[1]}</option>`).join('')}</select></label><label>التاريخ<input name="dt" type="date" value="${dnow}"></label><label>الوصف<input name="ds"></label><label>مبلغ ج.م<input name="eg" type="number" step="any" inputmode="decimal"></label><label>USDT<input name="us" type="number" step="any" inputmode="decimal"></label><label>ذهب 24 (جم)<input name="gm" type="number" step="any" inputmode="decimal"></label></div><button class="p" data-a="add">إضافة</button></form></section><section class="c"><h2>السجل (${L.length})</h2><div class="g"><label>تصفية النوع<select data-f="1"><option value="">الكل</option>${Object.entries(TY).map(e=>`<option value="${e[0]}"${flt===e[0]?' selected':''}>${e[1]}</option>`).join('')}</select></label><label>السنة<select data-fy="1"><option value="">كل السنوات</option>${allYears.map(y=>`<option value="${y}"${fltYear===y?' selected':''}>${y}</option>`).join('')}</select></label></div><div class="ks filter-total">${kp('إجمالي ج.م',N(tot.egp))}${kp('إجمالي USDT',N(tot.usdt,2))}${kp('إجمالي ذهب 24',N(tot.gold,3)+' جم')}${kp('عدد النتائج',N(tot.count))}</div><div class="tb sc"><table><tr><th>التاريخ</th><th>النوع</th><th>الوصف</th><th>المبلغ</th><th></th></tr>${L.length?L.map(z=>{const x=z[0];return`<tr><td>${E(x[1])}</td><td>${E(TY[x[0]]||x[0])}</td><td>${E(x[2])}</td><td>${x[5]?N(x[5],2)+' ج':x[3]?N(x[3],2)+' USDT':N(x[4],3)+' جم'}</td><td><button data-a="del" data-i="${z[1]}">حذف</button></td></tr>`}).join(''):'<tr><td colspan="5" class="mu">لا توجد نتائج</td></tr>'}</table></div></section>`}
+function vZk(c){const z=c.total*.025,ns=85*c.gp,rem=Math.max(0,z-S.zk.paid),y=+S.zk.year||new Date().getFullYear();return`<section class="c"><h2>زكاة سنة ${y} م</h2><div class="ks">${kp('الأصول الزكوية',N(c.total))}${kp('الزكاة 2.5%',N(z))}${kp('المدفوع',N(S.zk.paid))}${kp('المتبقي',N(rem),'حتى '+S.due,c.days<=30?'dn':'au')}${kp('النصاب (85 جم ذهب)',N(ns),c.total>=ns?'بلغ النصاب':'لم يبلغ')}</div><div class="g">${fl('المدفوع في السنة الحالية','zk.paid',S.zk.paid)}</div><p class="mu">تُفتح سنة زكاة جديدة تلقائيًا عند دخول سنة ميلادية جديدة، ويمكن إضافة أو تعديل أي سنة يدويًا من النموذج أدناه.</p></section><section class="c"><h2>إضافة أو تعديل سنة زكاة</h2><form id="zkf" onsubmit="return false"><div class="g"><label>السنة<input name="zy" type="number" min="2000" max="9999" value="${y}"></label><label>أساس الزكاة<input name="zb" type="number" min="0" step="any" value="${N(c.total,2).replace(/,/g,'')}"></label><label>المدفوع<input name="zp" type="number" min="0" step="any" value="${N(S.zk.paid,2).replace(/,/g,'')}"></label></div><button class="p" data-a="addzk">حفظ السنة</button> <span id="zkmsg" class="mu"></span></form></section><section class="c"><h2>الأعوام السابقة</h2><div class="tb"><table><tr><th>السنة</th><th>الأساس</th><th>المستحق 2.5%</th><th>المدفوع</th><th>المتبقي</th></tr>${S.zk.h.map(h=>{const d=num(h[1])*.025-num(h[2]);return`<tr><td>${E(h[0])}</td><td>${N(h[1])}</td><td>${N(num(h[1])*.025,2)}</td><td>${N(h[2],2)}</td><td class="${Math.abs(d)<.05?'up':'dn'}">${N(d,2)}</td></tr>`}).join('')||'<tr><td colspan="5" class="mu">لا توجد سنوات سابقة</td></tr>'}</table></div><p class="mu">الحساب تقديري للمراجعة، ويُستحسن التحقق من النصاب والديون المستحقة وتاريخ الوجوب شرعيًا.</p></section>`}
+function vHl(c){const d={};S.tx.forEach(x=>{if(/توزيع/.test(x[2])&&x[5]>1000)(d[x[5]]=d[x[5]]||[]).push(x[1])});const du=Object.entries(d).filter(e=>e[1].length>1),age=Math.round((new Date()-new Date(S.man.cd))/864e5),zd=S.zk.h.some(h=>Math.abs(h[1]*.025-h[2])>=.05),go=c.rows[0][1]/c.total-.25,gq=gaps(),z0=S.im.filter(m=>m.tq>0&&!m.te).map(m=>m.d.slice(0,7));
+const ck=[[!du.length,'توزيعات بنفس المبلغ',du.length?du.map(e=>N(e[0],2)+' ('+e[1].join('، ')+')').join(' | ')+' — راجع كشف السمسرة':'لا يوجد'],[age<=14,'عمر رصيد كريبتو','منذ '+age+' يوم (الحد 14)'],[!zd,'زكاة الأعوام السابقة','مطابقة 2.5%'],[!gq.length,'أشهر دخل ناقصة',gq.join('، ')||'لا يوجد'],[!z0.length,'تحويل ريال بلا مبلغ جنيه',z0.join('، ')||'لا يوجد'],[Math.abs(go)<=.1,'تركّز الذهب','أعلى من الهدف بـ '+(go*100).toFixed(1)+' نقطة (الحد 10)']];
+return`<section class="c"><h2>فحوصات البيانات</h2>${ck.map(k=>`<p><b class="${k[0]?'up':'dn'}">${k[0]?'✓':'✗'}</b> ${k[1]}: <span class="mu">${k[2]}</span></p>`).join('')}</section>
+<section class="c"><h2>تثبيت رصيد ربع</h2><div class="g"><label>الوسم<input id="ql" value="${new Date().getFullYear()+'-Q'+Math.ceil((new Date().getMonth()+1)/3)}"></label></div><p><button data-a="qsnap">ثبّت الرصيد الحالي (${N(c.total)})</button></p></section><section class="c"><h2>نسخة احتياطية</h2><p><button class="p" data-a="bk">تنزيل نسخة JSON</button> <button data-a="rz" data-s="0">إعادة ضبط البيانات الأصلية</button></p><label>استعادة: الصق محتوى النسخة<textarea id="rs" rows="3"></textarea></label><p><button data-a="rs">استعادة</button> <span id="ms" class="mu"></span></p></section>`}
+function ensureZakatYear(){const now=+td().slice(0,4),prev=+S.zk.year||now;if(prev<now){const q=S.q.find(x=>x[0]===prev+'-Q4')||S.q.filter(x=>String(x[0]).startsWith(prev+'-')).slice(-1)[0],base=q?q[1]:C().total;if(!S.zk.h.some(h=>String(h[0])===String(prev)+' م'))S.zk.h.push([prev+' م',base,num(S.zk.paid)]);S.zk.year=now;S.zk.paid=0;save();st('تم فتح سنة زكاة '+now+' وترحيل السنة السابقة')}}
+function addZakatYear(){const f=$('#zkf'),y=+f.zy.value||0,base=+f.zb.value||0,paid=+f.zp.value||0;if(!Number.isInteger(y)||y<2000||y>9999||base<0||paid<0){$('#zkmsg').textContent='تحقق من السنة والقيم المدخلة';return}if(y===+S.zk.year){S.zk.paid=paid}else{const label=y+' م',i=S.zk.h.findIndex(h=>String(h[0])===label||String(h[0])===String(y));if(i<0)S.zk.h.push([label,base,paid]);else S.zk.h[i]=[label,base,paid]}save();render();st('تم حفظ سنة الزكاة '+y)}
+function yearOf(d){const y=String(d||'').slice(0,4);return /^\d{4}$/.test(y)?+y:null}
+function yearStats(y){
+ const tx=S.tx.filter(x=>yearOf(x[1])===y),im=S.im.filter(m=>yearOf(m.d)===y);
+ const income=im.reduce((a,m)=>a+num(m.te),0),invested=im.reduce((a,m)=>a+Object.values(m.a||{}).reduce((b,v)=>b+num(v),0),0);
+ const cashflow=tx.reduce((a,x)=>a+num(x[5]),0),profit=tx.filter(x=>x[0]==='Profit').reduce((a,x)=>a+num(x[5]),0),fees=tx.filter(x=>x[0]==='Fee').reduce((a,x)=>a+num(x[5]),0),tathir=tx.filter(x=>x[0]==='Tathir').reduce((a,x)=>a+num(x[5]),0);
+ return {year:y,tx:tx.length,months:im.length,income,invested,cashflow,profit,fees,tathir};
+}
+function archiveYear(y){if(S.annual.archived[y])return;const st=yearStats(y),q=S.q.find(x=>x[0]===y+'-Q4')||S.q.filter(x=>String(x[0]).startsWith(y+'-')).slice(-1)[0];S.annual.archived[y]={...st,closingSnapshot:q?q[1]:null,archivedAt:td()};}
+function ensureCurrentYear(){const now=+td().slice(0,4),active=+S.annual.currentYear||now;if(active<now){for(let y=active;y<now;y++)archiveYear(y);S.annual.currentYear=now;S.annual.viewYear=now;save();st('تم فتح سنة '+now+' وأرشفة السنوات السابقة')}syncYearSelect();}
+function syncYearSelect(){const el=$('#yearSel');if(!el)return;const now=+td().slice(0,4),ys=new Set([now,+S.annual.currentYear,+S.annual.viewYear,...Object.keys(S.annual.archived).map(Number)]);S.im.forEach(m=>{const y=yearOf(m.d);if(y)ys.add(y)});S.tx.forEach(x=>{const y=yearOf(x[1]);if(y)ys.add(y)});el.innerHTML=[...ys].filter(Number.isInteger).sort((a,b)=>b-a).map(y=>`<option value="${y}"${+S.annual.viewYear===y?' selected':''}>${y}${S.annual.archived[y]?' · مؤرشفة':''}</option>`).join('')}
+function vYears(c){const y=+S.annual.viewYear||+S.annual.currentYear,st=yearStats(y),arch=[...Object.values(S.annual.archived)].sort((a,b)=>b.year-a.year);const rows=arch.map(a=>`<tr><td>${a.year}</td><td>${N(a.income)}</td><td>${N(a.invested)}</td><td>${N(a.profit)}</td><td>${a.closingSnapshot===null?'—':N(a.closingSnapshot)}</td></tr>`).join('');return`<section class="c"><h2>السنة النشطة: ${y}</h2><div class="ks">${kp('دخل محوّل',N(st.income),'عدد الأشهر '+st.months)}${kp('إجمالي المستثمر',N(st.invested))}${kp('أرباح محققة',N(st.profit),'قبل التطهير والرسوم','up')}${kp('العمليات',N(st.tx))}</div><p class="mu">تُضاف العمليات الجديدة تلقائيًا إلى سنة تاريخها. عند دخول يناير تُؤرشف السنة السابقة تلقائيًا وتُفتح سنة جديدة دون حذف الرصيد أو السجل.</p></section><section class="c"><h2>الأرشيف السنوي</h2><div class="tb"><table><tr><th>السنة</th><th>الدخل المحوّل</th><th>المستثمر</th><th>الأرباح</th><th>آخر رصيد مثبت</th></tr>${rows||'<tr><td colspan="5" class="mu">لا توجد سنوات مؤرشفة بعد</td></tr>'}</table></div></section><section class="c"><h2>قواعد الاستمرارية</h2><p>لا يتم تصفير المحفظة عند بداية السنة؛ تبقى الأصول والأسعار والأرصدة كما هي، بينما تُصنّف العمليات والدخل حسب تاريخها. يمكن اختيار أي سنة من القائمة أعلى الصفحة لمراجعة تقريرها.</p></section>`}
+function txFiltered(){return S.tx.filter(x=>(!flt||x[0]===flt)&&(!fltYear||String(x[1]).slice(0,4)===fltYear))}
+function txTotals(list){return list.reduce((a,x)=>{a.egp+=num(x[5]);a.usdt+=num(x[3]);a.gold+=num(x[4]);a.count++;return a},{egp:0,usdt:0,gold:0,count:0})}
+function chartSvg(items,color='var(--ac)'){const vals=items.map(x=>num(x[1])),mx=Math.max(1,...vals),w=620,h=220,p=28,bw=Math.max(12,Math.min(52,(w-p*2)/Math.max(1,items.length)-8));return`<svg class="chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="رسم بياني"><line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="var(--ln)"/><g>${items.map((x,i)=>{const bh=(num(x[1])/mx)*(h-p*2),xx=p+i*((w-p*2)/Math.max(1,items.length))+(w-p*2)/Math.max(1,items.length)/2-bw/2;return`<rect x="${xx.toFixed(1)}" y="${(h-p-bh).toFixed(1)}" width="${bw}" height="${Math.max(1,bh).toFixed(1)}" rx="4" fill="${color}" opacity=".85"><title>${E(x[0])}: ${N(x[1])}</title></rect><text x="${(xx+bw/2).toFixed(1)}" y="${h-8}" text-anchor="middle">${E(String(x[0]).slice(-7))}</text>`}).join('')}</g></svg>`}
+function vAn(c){const y=+S.annual.viewYear||new Date().getFullYear(),tx=S.tx.filter(x=>String(x[1]).slice(0,4)===String(y)),months=Array.from({length:12},(_,i)=>{const m=String(i+1).padStart(2,'0');return[y+'-'+m,tx.filter(x=>String(x[1]).slice(0,7)===y+'-'+m).reduce((a,x)=>a+num(x[5]),0)]}),by=Object.entries(tx.reduce((a,x)=>(a[x[0]]=(a[x[0]]||0)+num(x[5]),a),{}));return`<section class="c"><h2>تحليلات ${y}</h2><div class="ks">${kp('إجمالي العمليات',N(tx.length))}${kp('صافي العمليات ج.م',N(tx.reduce((a,x)=>a+num(x[5]),0)))}${kp('USDT',N(tx.reduce((a,x)=>a+num(x[3]),0),2))}${kp('ذهب 24',N(tx.reduce((a,x)=>a+num(x[4]),0),3)+' جم')}</div></section><section class="c"><h2>الحركة الشهرية</h2>${chartSvg(months,'var(--ac)')}</section><section class="c"><h2>التوزيع حسب النوع</h2>${chartSvg(by,'var(--gold)')}</section>`}
+function render(){ensureCurrentYear();ensureZakatYear();const c=C();$('#app').innerHTML='<nav>'+[['ov','نظرة عامة'],['inv','الاستثمارات'],['in','الدخل'],['pf','الأرصدة والأسعار'],['tx','العمليات'],['zk','الزكاة'],['hl','الصحة والنسخ'],['years','السنوات'],['an','التحليلات']].map(t=>`<button data-t="${t[0]}" class="${t[0]==tab||(tab=='st'&&t[0]=='inv')?'on':''}">${t[1]}</button>`).join('')+'</nav>'+({ov:vOv,inv:vInv,st:vSt,in:vIn,pf:vPf,tx:vTx,zk:vZk,hl:vHl,years:vYears,an:vAn})[tab](c)}
+const td=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+ const AL=[['Stocks','بورصة'],['Gold','ذهب'],['Crypto','كريبتو'],['Library','مكتبة'],['RealEstate','عقار'],['Cash','نقد']],MN=(d,n)=>{const x=new Date(d);x.setMonth(x.getMonth()+n);return x.toISOString().slice(0,10)};
+const RT=()=>S.re.up+S.re.mo*S.re.n+S.re.x.reduce((s,x)=>s+x[1],0);
+function mig(){
+ const cp=o=>JSON.parse(JSON.stringify(o));
+ if(!Array.isArray(S.tx))S.tx=cp(SEED.tx);
+ if(!S.man||typeof S.man!=='object')S.man=cp(SEED.man);
+ if(!Array.isArray(S.im))S.im=cp(SEED.im);
+ if(!S.plan||typeof S.plan!=='object')S.plan=cp(SEED.plan);
+ if(!S.re||typeof S.re!=='object')S.re=cp(SEED.re);
+ if(!Array.isArray(S.re.x))S.re.x=cp(SEED.re.x);
+ if(!S.cert||typeof S.cert!=='object')S.cert=cp(SEED.cert);
+ if(!Array.isArray(S.cert.r))S.cert.r=cp(SEED.cert.r);
+ if(!Array.isArray(S.q))S.q=cp(SEED.q);
+ if(!S.zk||typeof S.zk!=='object')S.zk=cp(SEED.zk);
+ if(!Array.isArray(S.zk.h))S.zk.h=cp(SEED.zk.h);
+ if(!Number.isInteger(+S.zk.year))S.zk.year=new Date().getFullYear();
+ if(!Array.isArray(S.cash))S.cash=cp(SEED.cash);
+ ['usd','oz'].forEach(k=>{if(!Number.isFinite(+S[k])||+S[k]<=0)S[k]=SEED[k];else S[k]=+S[k]});
+ ['cr','sm','sc','cb','lv'].forEach(k=>{if(!Number.isFinite(+S.man[k]))S.man[k]=SEED.man[k];else S.man[k]=+S.man[k]});
+ ['c','p'].forEach(k=>{if(!Number.isFinite(+S.cert[k]))S.cert[k]=SEED.cert[k];else S.cert[k]=+S.cert[k]});
+ ['up','mo','n'].forEach(k=>{if(!Number.isFinite(+S.re[k])||+S.re[k]<0)S.re[k]=SEED.re[k];else S.re[k]=+S.re[k]});
+ if(!S.annual||typeof S.annual!=='object')S.annual={activeYear:new Date().getFullYear(),archived:{}};
+ if(!Number.isInteger(+S.annual.activeYear))S.annual.activeYear=new Date().getFullYear();
+ if(!S.annual.archived||typeof S.annual.archived!=='object')S.annual.archived={};
+ if(!Number.isInteger(+S.annual.currentYear))S.annual.currentYear=+S.annual.activeYear||new Date().getFullYear();
+ if(!Number.isInteger(+S.annual.viewYear))S.annual.viewYear=+S.annual.activeYear||S.annual.currentYear;
+ delete S.inc;
+}
+function gaps(){const ds=S.im.map(m=>m.d.slice(0,7)).sort(),o=[];if(!ds.length)return o;let[y,m]=ds[0].split('-').map(Number);for(;;){const k=y+'-'+String(m).padStart(2,'0');if(k>ds[ds.length-1])return o;if(!ds.includes(k))o.push(k);if(++m>12){m=1;y++}}}
+function vIn(c){const L=S.im.map((m,i)=>[m,i]).sort((a,b)=>b[0].d<a[0].d?-1:1),Y=S.im.filter(m=>m.d>=new Date().getFullYear()+'-01-01'),sm=k=>Y.reduce((s,m)=>s+(m[k]||0),0),inv=m=>Object.values(m.a).reduce((s,v)=>s+v,0),iy=Y.reduce((s,m)=>s+inv(m),0),pl=Object.values(S.plan).reduce((s,v)=>s+v,0),nf=n=>`<input name="${n}" type="number" step="any" inputmode="decimal">`;
+return`<div class="ks">${kp('دخل هذا العام (ريال)',N(sm('q')))}${kp('محوّل هذا العام (ج.م)',N(sm('te')))}${kp('مستثمر هذا العام',N(iy),'متوسط شهري '+N(iy/Math.max(1,Y.length)))}</div>
+<section class="c"><h2>إضافة دخل شهر</h2><form id="inf" onsubmit="return false"><div class="g"><label>الشهر<input name="d" type="date" value="${td().slice(0,8)}01"></label><label>الدخل (ريال)${nf('q')}</label><label>المحوّل (ريال)${nf('tq')}</label><label>المستلم (ج.م)${nf('te')}</label><label>أحتفظ به للمصروف (ج.م)${nf('ex')}</label></div><div class="g">${AL.map(a=>`<label>${a[1]} (ج.م)${nf(a[0])}</label>`).join('')}</div><p><button type="button" data-a="auto">توزيع تلقائي</button> <button class="p" data-a="addim">حفظ الشهر</button> <span id="lv" class="mu"></span></p></form></section>
+<section class="c"><h2>نسب التوزيع التلقائي (%)</h2><div class="g">${AL.filter(a=>a[0]!='RealEstate').map(a=>fl(a[1],'plan.'+a[0],S.plan[a[0]])).join('')}</div><span class="${pl==100?'mu':'dn'}">المجموع ${pl}%${pl==100?'':' (يجب 100)'} · يُخصم قسط العقار (${N(S.re.mo)}) أولًا ثم يُوزَّع الباقي</span></section>
+<section class="c"><h2>السجل</h2><div class="tb sc"><table><tr><th>الشهر</th><th>دخل ر</th><th>محوّل ر</th><th>محوّل ج</th><th>مستثمر</th><th>مصروف/عائلة</th><th>متبقٍ ر</th><th></th></tr>${L.map(z=>{const m=z[0],v=inv(m);return`<tr><td>${m.d.slice(0,7)}</td><td>${N(m.q)}</td><td>${N(m.tq)}</td><td>${N(m.te)}</td><td>${N(v)}</td><td>${N(m.te-v)}</td><td>${N(m.q-m.tq)}</td><td><button data-a="delim" data-i="${z[1]}">حذف</button></td></tr>`}).join('')}</table></div><p class="mu">المتبقي بالريال يبقى خارج المحفظة ما لم تسجّله نقدًا في الأصول. والمبلغ الموزّع على «نقد» يُضاف للنقدية تلقائيًا، فلا تعدّل أرصدة النقدية لنفس المبلغ.</p></section>`}
+function vRe(c){const R=S.re,T=RT(),xp=R.x.reduce((s,x)=>s+x[2],0),xl=R.x.reduce((s,x)=>s+x[1]-x[2],0),il=Math.max(0,R.mo*R.n-Math.max(0,c.re-R.up-xp)),n=Math.ceil(il/R.mo),mk=td().slice(0,7),pd=S.tx.filter(x=>x[0]=='RealEstate'&&x[1].slice(0,7)==mk).reduce((s,x)=>s+x[5],0)+S.im.filter(m=>m.d.slice(0,7)==mk).reduce((s,m)=>s+(m.a.RealEstate||0),0);let b=il;
+const sc=[...Array(6)].map((_,i)=>{const a=Math.min(R.mo,b);b-=a;return`<tr><td>${MN(mk+'-'+R.start.slice(8),i+(pd>=R.mo?1:0))}</td><td>${N(a)}</td><td>${N(b)}</td></tr>`}).join('');
+return`<section class="c"><h2>خطة UBL – فريدة</h2><div class="g">${fl('المقدم + دفعة أكتوبر','re.up',R.up)}${fl('القسط الشهري','re.mo',R.mo)}${fl('عدد الأقساط','re.n',R.n)}${fl('تاريخ أول قسط','re.start',R.start,'date')}</div><div class="tb"><table><tr><th>البند</th><th>المبلغ</th><th>المدفوع منه</th></tr><tr><td>المقدم + دفعة أكتوبر 2026</td><td>${N(R.up)}</td><td></td></tr><tr><td>الأقساط (${R.n} × ${N(R.mo)})</td><td>${N(R.mo*R.n)}</td><td></td></tr>${R.x.map((x,i)=>`<tr><td>${E(x[0])}</td><td>${N(x[1])}</td><td>${inp('re.x.'+i+'.2',x[2])}</td></tr>`).join('')}<tr><td><b>الإجمالي الكلي</b></td><td><b>${N(T)}</b></td><td></td></tr></table></div><span class="mu">رسوم المنصة 8,790 مدرجة ضمن الإجمالي وليست إضافية.</span></section>
+<div class="ks">${kp('المدفوع',N(c.re),P(c.re/T)+' من الإجمالي')}${kp('المتبقي (التزام)',N(c.liab),'أقساط '+N(il)+' + إضافية '+N(xl),'au')}${kp('الأقساط المتبقية',N(n),'تنتهي ≈ '+MN(td(),n).slice(0,7))}${kp('هذا الشهر',pd>=R.mo?'✓ مسدَّد':'مستحق '+N(R.mo-pd),'القسط '+N(R.mo),pd>=R.mo?'up':'dn')}</div>
+<div class="bar"><i style="width:${Math.min(100,c.re/T*100)}%;background:var(--ac)"></i></div>
+<section class="c"><h2>الأقساط القادمة</h2><div class="tb"><table><tr><th>الموعد</th><th>القسط</th><th>المتبقي من الأقساط</th></tr>${sc}</table></div><p class="mu">الدفعات الإضافية (${N(xl)} متبقية) غير مجدولة هنا لأن مواعيدها حسب عقدك. سجّل كل دفعة في الدخل أو العمليات (عقار) وحدّد قيمتها في عمود «المدفوع منه»، فلا تُحتسب من الأقساط. يُحتسب في الثروة ما دُفع فعلًا فقط، والأقساط المستقبلية لا تُخصم من الزكاة تلقائيًا، فاستفتِ في معاملتها.</p></section>`}
+function lv(){const f=$('#inf');if(!f)return;const g=k=>+f[k].value||0,s=AL.reduce((a,x)=>a+g(x[0]),0);$('#lv').textContent='موزَّع '+N(s)+' · الباقي للمصروف '+N(g('te')-s)}
+function auto(){const f=$('#inf'),g=k=>+f[k].value||0,av=Math.max(0,g('te')-g('ex')),re=Math.min(S.re.mo,av),rest=av-re;AL.forEach(x=>f[x[0]].value=x[0]=='RealEstate'?Math.round(re):Math.round(rest*(S.plan[x[0]]||0)/100));lv()}
+function addim(){const f=$('#inf'),g=k=>+f[k].value||0,a={};AL.forEach(x=>a[x[0]]=g(x[0]));if(!/^\d{4}-\d{2}-\d{2}$/.test(f.d.value)||g('te')<0||AL.some(x=>a[x[0]]<0)||g('te')-AL.reduce((s,x)=>s+a[x[0]],0)<-.5){$('#lv').textContent='تحقق من الشهر؛ التوزيع يتجاوز المستلم';return}S.im.push({d:f.d.value,q:g('q'),tq:g('tq'),te:g('te'),a});save();render()}
+document.addEventListener('input',e=>{if(e.target.form&&e.target.form.id=='inf')lv()});
+const KS=['Gold','Stocks','Cert','Crypto','Cash','RE','Library'],KN={Gold:'الذهب',Stocks:'البورصة',Cert:'شهادة فيصل',Crypto:'كريبتو',Cash:'النقدية',RE:'العقار',Library:'المكتبة'},KT={Gold:['Gold'],Stocks:['Stocks','Fee','Tathir','Profit'],Crypto:['Crypto'],Library:['Library'],RE:['RealEstate']},KI={Gold:'Gold',Stocks:'Stocks',Crypto:'Crypto',Library:'Library',RE:'RealEstate',Cash:'Cash'},co=s=>s.replace(/^(ارباح |أرباح )?(توزيعات|إغلاق)\s*/,'').replace(/ جزء$/,'').trim()||s;
+const QK={Stocks:[['dep','إيداع'],['div','توزيعات'],['close','إغلاق صفقة'],['th','تطهير'],['fee','رسوم'],['wd','سحب']],Gold:[['buy','شراء'],['sell','بيع']],Crypto:[['dep','إيداع'],['wd','سحب']],Library:[['dep','إيداع'],['wd','سحب']],RealEstate:[['dep','قسط / دفعة']]},QL={Stocks:'بورصة',Gold:'ذهب',Crypto:'كريبتو',Library:'مكتبة',RealEstate:'عقار'},QD={dep:'إيداع',wd:'سحب',buy:'شراء',sell:'بيع',div:'توزيعات',close:'إغلاق',th:'تطهير',fee:'رسوم'};
+let cur='Gold',Q={i:'Stocks',k:'dep',on:false};
+const nI=n=>`<input name="${n}" type="number" step="any" inputmode="decimal">`;
+function vSheet(){if(!Q.on)return'';const g=Q.i=='Gold',pf=Q.i=='Stocks'&&['div','close'].includes(Q.k),cos=[...new Set(S.tx.filter(x=>x[0]=='Profit').map(x=>co(x[2])))];
+return`<div class="ov"><div class="bd" data-a="qx"></div><div class="sh"><h2>تسجيل سريع</h2><div class="chips">${Object.keys(QK).map(i=>`<button class="${Q.i==i?'on':''}" data-qi="${i}">${QL[i]}</button>`).join('')}</div><div class="chips">${QK[Q.i].map(k=>`<button class="${Q.k==k[0]?'on':''}" data-qk="${k[0]}">${k[1]}</button>`).join('')}</div>
+<form id="qf" onsubmit="return false"><div class="g"><label>التاريخ<input name="d" type="date" value="${td()}"></label>${g?`<label>العيار<select name="kr"><option>24</option><option>21</option><option>18</option></select></label><label>الوزن (جم)${nI('gm')}</label><label>المبلغ (ج.م)${nI('eg')}</label>`:Q.i=='Crypto'?`<label>المبلغ (USDT)${nI('us')}</label>`:`<label>المبلغ (ج.م)${nI('eg')}</label>`}${pf?`<label>السهم<input name="ds" list="cos"></label><datalist id="cos">${cos.map(c=>`<option>${c}</option>`).join('')}</datalist>`:`<label>ملاحظة<input name="ds"></label>`}</div><p class="mu" id="qp"></p><p><button class="p" data-a="qsave">حفظ</button> <button data-a="qx">إلغاء</button> <button data-t="in">دخل شهري ›</button> <button data-t="pf">تحديث رصيد ›</button></p></form></div></div>`}
+const sheet=()=>{$('#sh').innerHTML=vSheet()};
+function qsave(){const f=$('#qf'),n=k=>f[k]?+f[k].value||0:0,i=Q.i,k=Q.k,d=f.d.value||td(),nt=f.ds.value.trim(),sgn=['wd','sell'].includes(k)?-1:1,ds=(['div','close'].includes(k)?QD[k]+' '+nt:nt||QD[k]).trim();let x;
+if(i=='Gold')x=['Gold',d,ds,0,n('gm')*(+f.kr.value)/24*sgn,n('eg')*sgn];else if(i=='Crypto')x=['Crypto',d,ds,n('us')*sgn,0,0];else x=[k=='div'||k=='close'?'Profit':k=='th'?'Tathir':k=='fee'?'Fee':i,d,ds,0,0,n('eg')*sgn];
+if(!(x[3]||x[4]||x[5])){$('#qp').textContent='أدخل المبلغ';return}S.tx.push(x);save();Q.on=false;sheet();render();st('سُجّل: '+ds)}
+function qsnap(){const l=$('#ql').value.trim();if(!l)return;const c=C(),i=S.q.findIndex(x=>x[0]==l);if(i<0)S.q.push([l,c.total]);else S.q[i][1]=c.total;S.q.sort((a,b)=>a[0]<b[0]?-1:1);save();tab='ov';render()}
+function lg(k){const r=[];S.tx.forEach((x,i)=>{if((KT[k]||[]).includes(x[0]))r.push({d:x[1],s:x[2]+(x[4]?' · '+N(x[4],3)+' جم':'')+(k=='Stocks'&&x[0]!='Stocks'?' ('+TY[x[0]]+')':''),a:k=='Crypto'?x[3]:x[5],i,ty:x[0]})});
+S.im.forEach(m=>{if(m.a[KI[k]])r.push({d:m.d,s:'من دخل '+m.d.slice(0,7),a:m.a[KI[k]],i:-1,ty:KI[k]})});r.sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);let run=0;r.forEach(x=>{run+=k!='Stocks'||x.ty==KI[k]?x.a:0;x.run=run});return r}
+const sp=v=>{if(v.length<2)return'';const mx=Math.max(...v),mn=Math.min(...v,0);return`<svg viewBox="0 0 300 56" width="100%" height="56" preserveAspectRatio="none"><polyline points="${v.map((y,i)=>(i/(v.length-1)*300).toFixed(1)+','+(54-(y-mn)/(mx-mn||1)*52).toFixed(1)).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`};
+function vInv(c){return`<div class="il">${KS.map((k,j)=>{const r=c.rows[j],b={Gold:c.goldC,Stocks:c.inv,Crypto:c.cap*c.u,Library:c.libC,Cert:S.cert.p}[k],pl=b===undefined?null:r[1]-b;return`<button class="ir" data-st="${k}"><s style="background:${r[3]}"></s><span><b>${KN[k]}</b><i>${P(r[1]/c.total)} من المحفظة</i></span><span><b>${N(r[1])}</b>${pl===null?`<i>${k=='RE'?P(RT()?c.re/RT():0)+' من الخطة':'سيولة'}</i>`:`<i class="${cl(pl)}">${sg(pl)} · ${P(b?pl/b:0)}</i>`}</span></button>`}).join('')}</div>`}
+function vSt(c){const k=cur,L=lg(k),R=c.rows[KS.indexOf(k)],val=R[1],b={Gold:c.goldC,Stocks:c.inv,Crypto:c.cap*c.u,Cert:S.cert.p,Library:c.libC}[k],pl=val-b,fx={USD:c.u,QAR:c.u/3.65,SAR:c.u/3.65,EGP:1};let x='';
+if(k=='Gold')x=`<section class="c"><h2>المشتريات</h2><div class="tb"><table><tr><th>التاريخ</th><th>البيان</th><th>جرام 24</th><th>التكلفة</th><th>سعر الجرام</th><th>الربح</th></tr>${S.tx.filter(t=>t[0]=='Gold'&&t[4]>0&&t[5]>0).map(t=>{const v=t[4]*c.gp;return`<tr><td>${t[1]}</td><td>${t[2]}</td><td>${N(t[4],3)}</td><td>${N(t[5])}</td><td>${N(t[5]/t[4])}</td><td class="${cl(v-t[5])}">${P(v/t[5]-1)}</td></tr>`}).join('')}</table></div><p class="mu">الوزن ${N(c.g,3)} جم · متوسط التكلفة ${N(c.goldC/c.g)} · سعر اليوم ${N(c.gp)} ج/جم</p></section>`;
+else if(k=='Stocks'){const m={};S.tx.filter(t=>t[0]=='Profit').forEach(t=>{const n=co(t[2]);m[n]=m[n]||[0,0];m[n][/توزيع/.test(t[2])?0:1]+=t[5]});x=`<div class="ks">${kp('المستثمر',N(c.inv),'إيداع '+N(c.dep)+' · رسوم '+N(c.fee)+' · تطهير '+N(c.th))}${kp('غير المحقق',sg(S.man.sm-S.man.cb),'سوقي − Cost Basis',cl(S.man.sm-S.man.cb))}${kp('محقق صافٍ',N(c.prof),'بعد التطهير والرسوم','up')}</div><section class="c"><h2>الأرباح المحققة حسب السهم</h2><div class="tb"><table><tr><th>السهم</th><th>توزيعات</th><th>إغلاق</th><th>الإجمالي</th></tr>${Object.entries(m).sort((a,b)=>b[1][0]+b[1][1]-a[1][0]-a[1][1]).map(z=>`<tr><td>${z[0]}</td><td>${N(z[1][0])}</td><td>${N(z[1][1])}</td><td><b>${N(z[1][0]+z[1][1])}</b></td></tr>`).join('')}</table></div></section>`}
+else if(k=='Crypto')x=`<div class="ks">${kp('رأس المال',N(c.cap,2)+' USDT')}${kp('الرصيد',N(S.man.cr,2)+' USDT','حتى '+S.man.cd)}${kp('الخسارة',P(c.cap?S.man.cr/c.cap-1:0),N(c.cap-S.man.cr,2)+' USDT','dn')}</div>`;
+else if(k=='Cert'){let v=S.cert.c;x=`<section class="c"><h2>أرباح الأرباع</h2><div class="tb"><table><tr><th>الاستحقاق</th><th>النسبة</th><th>الربح</th><th>الرصيد</th></tr>${S.cert.r.map((r,i)=>{const dt=['2026-03-31','2026-06-30','2026-09-30','2026-12-31'][i],passed=dt<=td(),p=passed?v*r:0;if(passed)v+=p;return`<tr><td>${dt}${passed?' ✓':' (متوقع)'}</td><td>${P(r)}</td><td>${N(p)}</td><td>${N(v)}</td></tr>`}).join('')}</table></div><p class="mu">الأصل ${N(S.cert.p)} · الأرباح التراكمية ${N(val-S.cert.p)}</p></section>`}
+else if(k=='Cash')x=`<section class="c"><h2>الأرصدة</h2><div class="tb"><table>${S.cash.map(i=>`<tr><td>${E(i[0])}</td><td>${N(i[2])} ${E(i[1])}</td><td>${N(i[2]*fx[i[1]])}</td></tr>`).join('')}<tr><td>مخصّص من الدخل</td><td></td><td>${N(c.inc.cash)}</td></tr></table></div></section>`;
+else if(k=='RE')x=vRe(c);
+const kk=['Cash','RE','Cert'].includes(k)?'':`<div class="ks">${kp(k=='Stocks'?'المستثمر':'التكلفة',N(b))}${kp('الربح / الخسارة',sg(pl),P(b?pl/b:0),cl(pl))}</div>`;
+const lt=['Cash','Cert'].includes(k)?'':`<section class="c"><h2>كشف الحركة</h2>${sp(L.map(r=>r.run))}<div class="tb sc"><table><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th><th>الرصيد</th><th></th></tr>${[...L].reverse().map(r=>`<tr><td>${r.d}</td><td>${E(r.s)}</td><td class="${r.ty=='Profit'?'up':''}">${N(r.a,k=='Crypto'?2:0)}</td><td>${N(r.run,k=='Crypto'?2:0)}</td><td>${r.i<0?'':`<button data-a="del" data-i="${r.i}">حذف</button>`}</td></tr>`).join('')}</table></div></section>`;
+return`<p><button data-t="inv">‹ الاستثمارات</button></p><div class="hero"><small><s style="background:${R[3]}"></s>${KN[k]}</small><b>${N(val)}</b><small>${P(c.total?val/c.total:0)} من المحفظة${k=='Crypto'?' · '+N(S.man.cr,2)+' USDT':''}</small></div>${kk}${x}${lt}`}
+const ms=t=>{const e=$('#ms');if(e)e.textContent=t};
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset.f){flt=t.value;return render()}if(t.dataset.fy){fltYear=t.value;return render()}const p=t.dataset.p;if(!p)return;const k=p.split('.');let o=S;while(k.length>1)o=o[k.shift()];o[k[0]]=t.type=='number'?+t.value:t.value;save();render()});
+document.addEventListener('change',e=>{if(e.target.id==='yearSel'){S.annual.viewYear=+e.target.value||new Date().getFullYear();save();tab='years';render();return}});
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-t],[data-a],[data-st],[data-qi],[data-qk]');if(!b)return;const d=b.dataset;if(d.qi){Q.i=d.qi;Q.k=QK[Q.i][0][0];return sheet()}if(d.qk){Q.k=d.qk;return sheet()}if(d.st){cur=d.st;tab='st';render();return scrollTo(0,0)}if(d.t){Q.on=false;sheet();tab=d.t;render();return scrollTo(0,0)}const a=b.dataset.a;
+if(a=='add'){const f=$('#tf'),n=k=>Number.isFinite(+f[k].value)?+f[k].value:0,dtv=f.dt.value||td(),desc=f.ds.value.trim();if(!/^\d{4}-\d{2}-\d{2}$/.test(dtv)||!desc||(!n('us')&&!n('gm')&&!n('eg'))){st('تحقق من التاريخ والوصف والمبلغ');return}S.tx.push([f.ty.value,dtv,desc,n('us'),n('gm'),n('eg')]);save();render()}
+else if(a=='del'){if(b.dataset.s!='1'){b.dataset.s='1';b.textContent='تأكيد؟';return}S.tx.splice(+b.dataset.i,1);save();render()}
+else if(a=='bk'){try{const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='portfolio-backup-'+td()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);ms('تم تنزيل النسخة')}catch(x){ms('لم يتم التنزيل')}}
+else if(a=='rs'){try{const j=JSON.parse($('#rs').value);if(!j.tx||!j.man)throw 0;S=j;mig();save();tab='ov';render()}catch(x){ms('محتوى غير صالح')}}
+else if(a=='qo'){Q.on=true;sheet()}else if(a=='qx'){Q.on=false;sheet()}else if(a=='qsave')qsave();else if(a=='qsnap')qsnap();else if(a=='auto')auto();else if(a=='addzk')addZakatYear();else if(a=='addim')addim();else if(a=='delim'){if(b.dataset.s!='1'){b.dataset.s='1';b.textContent='تأكيد؟';return}S.im.splice(+b.dataset.i,1);save();render()}else if(a=='rz'){if(b.dataset.s!='1'){b.dataset.s='1';b.textContent='تأكيد؟ سيُمحى كل تعديل';return}S=JSON.parse(JSON.stringify(SEED));mig();save();tab='ov';render()}});
 
-<!-- Lock screen -->
-<div id="lockScreen" class="lock-screen" hidden>
-  <div class="lock-card">
-    <h2 id="lockTitle">محفظتي محمية</h2>
-    <p id="lockText">أدخل كلمة المرور لفك تشفير بياناتك المحلية.</p>
-    <form id="lockForm">
-      <label>كلمة المرور
-        <input id="lockPassword" type="password" minlength="8" autocomplete="current-password" required autofocus>
-      </label>
-      <label id="lockConfirmWrap" hidden>تأكيد كلمة المرور
-        <input id="lockConfirm" type="password" minlength="8" autocomplete="new-password">
-      </label>
-      <p class="err" id="lockError"></p>
-      <button class="p" id="lockSubmit" type="submit">فتح التطبيق</button>
-    </form>
-    <div id="restoreWrap" hidden style="margin-top:14px">
-      <label>استعادة نسخة مشفرة (اختياري)
-        <input id="restoreFile" type="file" accept=".json,.vault.json,application/json">
-      </label>
-      <button id="restoreSecureBtn" type="button" style="margin-top:8px">استعادة النسخة قبل إنشاء الخزنة</button>
-    </div>
-    <p class="secure-note">تُشفّر البيانات على هذا الجهاز باستخدام AES-GCM. لا يتم حفظ كلمة المرور نفسها. نسيانها يعني عدم إمكانية استعادة البيانات.</p>
-  </div>
-</div>
+// Theme
+(function(){
+  const btn = document.getElementById('tbtn');
+  if(!btn) return;
+  function apply(th){
+    document.documentElement.setAttribute('data-theme', th);
+    btn.textContent = th === 'dark' ? '☀' : '☾';
+    try{ localStorage.setItem('theme', th); }catch(e){}
+  }
+  let saved='light';try{saved=localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light')}catch(e){saved=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'}
+  apply(saved);
+  btn.onclick = () => apply(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+})();
 
-<!-- Change password modal -->
-<div id="pwModal" class="lock-screen" hidden>
-  <div class="lock-card">
-    <h2>تغيير كلمة المرور</h2>
-    <p>أدخل كلمة المرور الجديدة وأكدها. لن تظهر الأحرف على الشاشة.</p>
-    <form id="pwForm">
-      <label>كلمة المرور الجديدة
-        <input id="newPassword" type="password" minlength="8" autocomplete="new-password" required>
-      </label>
-      <label>تأكيد كلمة المرور
-        <input id="newPasswordConfirm" type="password" minlength="8" autocomplete="new-password" required>
-      </label>
-      <p class="err" id="pwError"></p>
-      <button class="p" type="submit">حفظ كلمة المرور</button>
-      <button type="button" id="pwCancel">إلغاء</button>
-    </form>
-  </div>
-</div>
-
-<div class="w">
-  <header>
-    <h1>محفظتي <span class="badge">احترافي</span></h1>
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu)">
-        السنة<select id="yearSel" style="width:auto;min-width:92px;padding:4px 7px;font-size:14px"></select>
-      </label>
-      <span id="st"></span>
-      <button id="lockBtn" type="button" title="قفل التطبيق">قفل</button>
-      <button id="installBtn" hidden title="تثبيت التطبيق">تثبيت</button>
-      <button id="tbtn" title="تبديل الوضع" style="border:1px solid var(--ln);background:var(--sf);border-radius:50%;width:34px;height:34px;font-size:15px;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center">☾</button>
-    </div>
-  </header>
-  <div id="app"></div>
-</div>
-
-<div id="sh"></div>
-<button id="fab" data-a="qo" aria-label="تسجيل سريع">＋</button>
-
-<script src="app.js" defer></script>
+render();
+(async()=>{try{if(!window.claude)return;const[d,u]=await Promise.all([claude.use('db'),claude.use('user')]);if(!d||!u)return;DB=d.collection('data/users/'+await u.id()).doc('state');const s=await DB.get();if(s.exists){S=JSON.parse(s.data().j);mig();render()}else DB.set({j:JSON.stringify(S),t:Date.now()});st('متزامن بين أجهزتك')}catch(e){}})();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+let deferredInstall;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;const b=document.querySelector('#installBtn');if(b)b.hidden=false});document.addEventListener('click',e=>{if(e.target.id==='installBtn'&&deferredInstall){deferredInstall.prompt();deferredInstall=null}});
+</script>
 </body>
 </html>

@@ -4,12 +4,9 @@
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#EDF0F1",
   "theme_color": "#1D5C63",
-  "categories": ["finance", "productivity"],
   "icons": [
     {
       "src": "icon.svg",
