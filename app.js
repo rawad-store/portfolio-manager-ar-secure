@@ -1077,24 +1077,7 @@ document.addEventListener('click', async e => {
   btn.addEventListener('click', () => apply(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
 })();
 
-/* ═══════════ BOOT ═══════════ */
-async function restoreNewVault() {
-  const file = $('#restoreFile')?.files?.[0], pw = $('#lockPassword').value, err = $('#lockError');
-  if (!file) { err.textContent = 'اختر ملف النسخة أولاً'; return; }
-  if (pw.length < 8) { err.textContent = 'أدخل كلمة مرور النسخة (8 أحرف على الأقل)'; return; }
-  try {
-    const r = await decryptPayload(await file.text(), pw);
-    vaultKey = r.key; vaultSalt = r.salt; vaultIterations = r.it;
-    S = r.data; mig();
-    isUnlocked = true;
-    if (!await save()) throw new Error('save');
-    hideLock(); render(); armAutoLock();
-  } catch (e) {
-    vaultKey = null; vaultSalt = null; vaultIterations = 600000;
-    err.textContent = 'تعذر الاستعادة — تحقق من كلمة المرور والملف';
-  }
-}
-
+//* ═══════════ BOOT (تعريف - موجود في مكانه) ═══════════ */
 async function boot() {
   const raw = localStorage.getItem(SECURE_K);
   const setup = !raw;
@@ -1132,27 +1115,47 @@ async function boot() {
   });
 }
 
-['click', 'keydown', 'touchstart'].forEach(ev => document.addEventListener(ev, () => { if (isUnlocked) armAutoLock(); }, { passive: true }));
-document.addEventListener('visibilitychange', () => { if (document.hidden && isUnlocked) lockApp(); });
+/* ═══════════ مستمعو الأحداث العامة ═══════════ */
+['click', 'keydown', 'touchstart'].forEach(ev =>
+  document.addEventListener(ev, () => { if (isUnlocked) armAutoLock(); }, { passive: true })
+);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && isUnlocked) lockApp();
+});
 
 document.querySelector('#lockBtn')?.addEventListener('click', lockApp);
-document.querySelector('#pwCancel')?.addEventListener('click', () => { $('#pwModal').hidden = true; armAutoLock(); });
+document.querySelector('#pwCancel')?.addEventListener('click', () => {
+  $('#pwModal').hidden = true;
+  armAutoLock();
+});
 document.querySelector('#pwForm')?.addEventListener('submit', applyPasswordChange);
 
-// Install prompt
+/* ═══════════ INSTALL PROMPT ═══════════ */
 let deferredInstall;
 window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredInstall = e;
-  const b = document.querySelector('#installBtn'); if (b) b.hidden = false;
+  e.preventDefault();
+  deferredInstall = e;
+  const b = document.querySelector('#installBtn');
+  if (b) b.hidden = false;
 });
 document.addEventListener('click', e => {
-  if (e.target.id === 'installBtn' && deferredInstall) { deferredInstall.prompt(); deferredInstall = null; }
+  if (e.target.id === 'installBtn' && deferredInstall) {
+    deferredInstall.prompt();
+    deferredInstall = null;
+  }
 });
 
-// PWA
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { }));
+/* ═══════════ PWA ═══════════ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () =>
+    navigator.serviceWorker.register('sw.js').catch(() => {})
+  );
+}
 
-// Init
+/* ═══════════ INIT (تنفيذ فقط — لا تعريف هنا) ═══════════ */
+const APP_VERSION = '5.0.0';
+console.log('[محفظتي] الإصدار', APP_VERSION);
+
 render();
-st('جاهز');
+st('جاهز · v' + APP_VERSION);
 boot();
