@@ -18,7 +18,7 @@
 
 افتح الموقع من GitHub Pages:
 
-<https://rawad-store.github.io/portfolio-manager-ar/>
+(https://rawad-store.github.io/portfolio-manager-ar-secure/)
 
 على الهاتف، افتح قائمة المتصفح واختر **إضافة إلى الشاشة الرئيسية** أو اضغط زر **تثبيت** داخل التطبيق إذا ظهر.
 
