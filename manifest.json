@@ -8,7 +8,7 @@
   "scope": "./",
   "id": "./index.html",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#EDF0F1",
   "theme_color": "#1D5C63",
   "categories": [
@@ -32,6 +32,47 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "تسجيل سريع",
+      "short_name": "تسجيل",
+      "description": "أضف عملية جديدة",
+      "url": "./index.html?a=qo",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "الزكاة",
+      "short_name": "الزكاة",
+      "url": "./index.html?t=zk",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "الصحة والنسخ الاحتياطي",
+      "short_name": "النسخ",
+      "url": "./index.html?t=hl",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
