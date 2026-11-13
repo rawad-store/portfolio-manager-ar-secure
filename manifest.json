@@ -53,6 +53,18 @@
       ]
     },
     {
+      "name": "التحليل المالي",
+      "short_name": "التحليل",
+      "description": "الأداء والمخاطر والسيولة",
+      "url": "./index.html?t=an",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "الزكاة",
       "short_name": "الزكاة",
       "url": "./index.html?t=zk",
