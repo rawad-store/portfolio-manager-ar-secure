@@ -1,6 +1,6 @@
 /* محفظتي — Service Worker
    غيّر رقم VERSION عند كل تحديث للتطبيق ليُحدَّث عند المستخدمين. */
-const VERSION='v20';
+const VERSION='v21';
 const CACHE='mahfazati-'+VERSION;
 const CORE=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png'];
 // cache:'reload' يتجاوز ذاكرة HTTP فلا يُخزَّن إصدار قديم من الصفحة عند التثبيت.
