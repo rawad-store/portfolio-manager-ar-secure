@@ -1,6 +1,6 @@
 /* محفظتي — Service Worker
    غيّر رقم VERSION عند كل تحديث للتطبيق ليُحدَّث عند المستخدمين. */
-const VERSION='v18';
+const VERSION='v19';
 const CACHE='mahfazati-'+VERSION;
 const CORE=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png','./icon-maskable-512.png','./apple-touch-icon.png'];
 // allSettled: غياب ملف واحد (مثل أيقونة) لا يُفشل التثبيت كله
